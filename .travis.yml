@@ -1,0 +1,24 @@
+language: python
+python:
+  - 2.7
+  - 3.4
+  - 3.5
+  - 3.6
+env:
+  - DJANGO_VERSION=1.8.18
+  - DJANGO_VERSION=1.9.13
+  - DJANGO_VERSION=1.10.7
+# https://docs.djangoproject.com/en/1.9/faq/install/#what-python-version-can-i-use-with-django
+addons:
+  apt_packages:
+    - pandoc
+before_install:
+    - ./pypi_packager.sh
+install:
+  - pip install -q django==$DJANGO_VERSION
+  - pip install -e .
+  - pip install -q coveralls
+script:
+  - coverage run --source=echoices echoices/tests/__main__.py
+after_success:
+  - coveralls
