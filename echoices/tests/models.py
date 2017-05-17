@@ -1,6 +1,7 @@
 from django.db import models
 
 from echoices.enums import EChoice
+from echoices.fields import EChoiceCharField
 
 
 class ETestCharChoices(EChoice):
@@ -18,17 +19,21 @@ class ETestIntChoices(EChoice):
     FIELD2 = (20, 'Label 2')
 
 
-class TestModelEChoiceChar(models.Model):
+class TestCharChoicesModel(models.Model):
     choices_charfield = models.CharField(max_length=ETestCharChoices.max_value_length(),
                                          choices=ETestCharChoices.choices(),
                                          default=ETestCharChoices.FIELD1.value)
 
 
-class TestModelEChoiceStr(models.Model):
+class TestStrChoicesModel(models.Model):
     choices_charfield = models.CharField(max_length=ETestStrChoices.max_value_length(),
                                          choices=ETestStrChoices.choices(),
                                          default=ETestStrChoices.FIELD1.value)
 
 
-class TestModelEChoiceInt(models.Model):
+class TestIntChoicesModel(models.Model):
     choices_charfield = models.IntegerField(choices=ETestIntChoices.choices(), default=ETestIntChoices.FIELD1.value)
+
+
+class TestEChoiceCharFieldModel(models.Model):
+    choices_charfield = EChoiceCharField(ETestCharChoices, default=ETestCharChoices.FIELD1)
