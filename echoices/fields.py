@@ -44,9 +44,7 @@ class EChoiceCharField(models.CharField):
         return self.echoices.from_value(value)
 
     def to_python(self, value):
-        if isinstance(value, self.echoices):
-            return value
-        if value is None:
+        if isinstance(value, self.echoices) or value is None:
             return value
         return self.echoices.from_value(value)
 
