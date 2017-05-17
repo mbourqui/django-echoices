@@ -50,6 +50,7 @@ class EOrderedChoiceTest(TestCase):
         self.assertRaises(AssertionError, ETestCharOrderedChoices.choices, 'foobar')
         self.assertEqual(ETestCharOrderedChoices.FIELD1.label, 'Label 1')
         self.assertIs(ETestCharOrderedChoices.from_value('v'), ETestCharOrderedChoices.FIELD3)
+        self.assertTrue(ETestCharOrderedChoices.FIELD1 > ETestCharOrderedChoices.FIELD2)
 
         self.assertEqual(ETestStrOrderedChoices.values(), ('value3', 'value1', 'value2'))
         self.assertEqual(ETestStrOrderedChoices.max_value_length(), 6)
@@ -65,6 +66,7 @@ class EOrderedChoiceTest(TestCase):
         self.assertRaises(AssertionError, ETestCharOrderedChoices.choices, 'foobar')
         self.assertEqual(ETestStrOrderedChoices.FIELD1.label, 'Label 1')
         self.assertIs(ETestStrOrderedChoices.from_value('value2'), ETestStrOrderedChoices.FIELD3)
+        self.assertTrue(ETestStrOrderedChoices.FIELD1 > ETestStrOrderedChoices.FIELD2)
 
         self.assertEqual(ETestIntOrderedChoices.values(), (30, 10, 20))
         self.assertEqual(ETestIntOrderedChoices.choices(), ((30, 'Label 1'), (10, 'Label 2'), (20, 'Label 3')))
@@ -75,6 +77,7 @@ class EOrderedChoiceTest(TestCase):
         self.assertRaises(AssertionError, ETestIntOrderedChoices.choices, 'foobar')
         self.assertEqual(ETestIntOrderedChoices.FIELD1.label, 'Label 1')
         self.assertIs(ETestIntOrderedChoices.from_value(20), ETestIntOrderedChoices.FIELD3)
+        self.assertTrue(ETestIntOrderedChoices.FIELD1 > ETestIntOrderedChoices.FIELD2)
 
     def test_create_empty_instances(self):
         TestCharOrderedChoicesModel.objects.create()
@@ -93,6 +96,8 @@ class EAutoChoiceTest(TestCase):
         self.assertRaises(AssertionError, ETestAutoChoices.choices, 'foobar')
         self.assertEqual(ETestAutoChoices.FIELD1.label, 'Label 1')
         self.assertIs(ETestAutoChoices.from_value(2), ETestAutoChoices.FIELD2)
+        self.assertTrue(ETestAutoChoices.FIELD1 < ETestAutoChoices.FIELD2)
+        self.assertTrue(ETestAutoChoices.FIELD2 < ETestAutoChoices.FIELD3)
 
     def test_create_empty_instances(self):
         TestAutoChoicesModel.objects.create()

@@ -25,6 +25,9 @@ class EChoice(Enum):
     __metaclass__ = ABCMeta
 
     def __new__(cls, value, label, *args, **kwargs):
+        if value in [c.value for c in list(cls)]:
+            raise AttributeError(
+                "Duplicate value: '{}'. Only unique values are supported in {}.".format(value, EChoice))
         obj = object.__new__(cls)
         obj._value_ = value  # Overrides default _value_
         obj._label_ = label
@@ -114,19 +117,9 @@ class EOrderedChoice(EChoice):
     """Provide ordering of the elements"""
     __metaclass__ = ABCMeta
 
-    def __ge__(self, other):
-        if self.__class__ is other.__class__:
-            return self.value >= other.value
-        return NotImplemented
-
     def __gt__(self, other):
         if self.__class__ is other.__class__:
             return self.value > other.value
-        return NotImplemented
-
-    def __le__(self, other):
-        if self.__class__ is other.__class__:
-            return self.value <= other.value
         return NotImplemented
 
     def __lt__(self, other):
