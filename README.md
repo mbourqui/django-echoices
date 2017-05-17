@@ -69,8 +69,8 @@ from django.db import models
 
 class MyModel(models.Model):
     state = models.CharField(max_length=EStates.max_value_length(),
-                                                choices=EStates.choices(),
-                                                default=EStates.CREATED.value)
+                             choices=EStates.choices(),
+                             default=EStates.CREATED.value)
 ```
 **Note**: If your value is an `int`, you can use `models.IntegerField` instead.
 
@@ -90,9 +90,9 @@ from echoices.enums import EChoice
 
 class EMyChoice(EChoice):
     """
-    You can add your own fields to the `value` and `label` ones. To do so, you have to override the __init__() and your
-    signature must look like: `self, value, label, *args` where you replace `*args` with your own positional arguments,
-    as you would do when defining a custom Enum.
+    You can add your own fields to the `value` and `label` ones. To do so, you have to override the
+    __init__() and your signature must look like: `self, value, label, *args` where you replace `*args`
+    with your own positional arguments, as you would do when defining a custom Enum.
     Do *not* call the super().__init__(), as `value` and `label` are already set by `EChoice`.
 
     As when dealing with a derived Enum, you can also add your own methods.
