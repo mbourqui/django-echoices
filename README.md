@@ -1,7 +1,9 @@
-[![Python](https://img.shields.io/badge/Python-3.5-blue.svg?style=flat-square)](/)
-[![Django](https://img.shields.io/badge/Django-1.10-blue.svg?style=flat-square)](/)
+[![Python](https://img.shields.io/badge/Python-3.4,3.5,3.6-blue.svg?style=flat-square)](/)
+[![Django](https://img.shields.io/badge/Django-1.8,1.9,1.10-blue.svg?style=flat-square)](/)
 [![License](https://img.shields.io/badge/License-GPLv3-blue.svg?style=flat-square)](/LICENSE)
 [![PyPI](https://img.shields.io/pypi/v/django_echoices.svg?style=flat-square)](https://pypi.python.org/pypi/django-echoices)
+[![Build Status](https://travis-ci.org/mbourqui/django-echoices.svg?branch=master)](https://travis-ci.org/mbourqui/django-echoices)
+[![Coverage Status](https://coveralls.io/repos/github/mbourqui/django-echoices/badge.svg)](https://coveralls.io/github/mbourqui/django-echoices)
 
 
 # Django-EChoices, choices for Django model fields as enumeration
