@@ -14,4 +14,4 @@ if __name__ == "__main__":
 
     django.setup()
 
-    sys.exit(DiscoverRunner(verbosity=1).run_tests(['echoices.tests.tests.backend']))
+    sys.exit(DiscoverRunner(verbosity=1).run_tests(['echoices.tests']))

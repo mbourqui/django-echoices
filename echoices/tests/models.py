@@ -20,20 +20,20 @@ class ETestIntChoices(EChoice):
 
 
 class TestCharChoicesModel(models.Model):
-    choices_charfield = models.CharField(max_length=ETestCharChoices.max_value_length(),
-                                         choices=ETestCharChoices.choices(),
-                                         default=ETestCharChoices.FIELD1.value)
+    choice = models.CharField(max_length=ETestCharChoices.max_value_length(),
+                              choices=ETestCharChoices.choices(),
+                              default=ETestCharChoices.FIELD1.value)
 
 
 class TestStrChoicesModel(models.Model):
-    choices_charfield = models.CharField(max_length=ETestStrChoices.max_value_length(),
-                                         choices=ETestStrChoices.choices(),
-                                         default=ETestStrChoices.FIELD1.value)
+    choice = models.CharField(max_length=ETestStrChoices.max_value_length(),
+                              choices=ETestStrChoices.choices(),
+                              default=ETestStrChoices.FIELD1.value)
 
 
 class TestIntChoicesModel(models.Model):
-    choices_charfield = models.IntegerField(choices=ETestIntChoices.choices(), default=ETestIntChoices.FIELD1.value)
+    choice = models.IntegerField(choices=ETestIntChoices.choices(), default=ETestIntChoices.FIELD1.value)
 
 
 class TestEChoiceCharFieldModel(models.Model):
-    choices_charfield = EChoiceCharField(ETestCharChoices, default=ETestCharChoices.FIELD1)
+    choice = EChoiceCharField(ETestCharChoices, default=ETestCharChoices.FIELD1)
