@@ -13,17 +13,15 @@
 
 ### Specialized enum types
 
-* `enums.EChoice` is the base enum type. Can be derived for further
-customization.
-* `enums.EOrderedChoice` supports ordering of elements.
-`EOrderedChoice.choices()` takes an extra optional argument,
-`order`, which supports three values: 'sorted', 'reverse' or 'natural'
-(default). If `sorted`, the choices are ordered according to their
-value. If `reverse`, the choices are ordered according to their
-value as if each comparison were reversed. If `natural`, the order is
-the one used when instantiating the enumeration.
-* `enums.EAutoChoice`, generates auto-incremented numeric values. It's
-then used like
+* `enums.EChoice` is the base enum type. Each enum element is a tuple `(value, label)`, where <cite>[t]he first element
+in each tuple is the actual value to be set on the model, and the second element is the human-readable name</cite>&nbsp;
+<sup>[doc](https://docs.djangoproject.com/en/1.11/ref/models/fields/#choices)</sup>. Values **must** be unique. Can be
+derived for further customization.
+* `enums.EOrderedChoice` supports ordering of elements. `EOrderedChoice.choices()` takes an extra optional argument,
+`order`, which supports three values: 'sorted', 'reverse' or 'natural' (default). If `sorted`, the choices are ordered
+according to their value. If `reverse`, the choices are ordered according to their value as if each comparison were
+reversed. If `natural`, the order is the one used when instantiating the enumeration.
+* `enums.EAutoChoice`, generates auto-incremented numeric values. It's then used like
     ```
     class EStates(EAutoChoice):
         # format is: label -> str
@@ -33,14 +31,11 @@ then used like
 
 ### Specialized model fields
 
-* `fields.EChoiceCharField` deals directly with the enum instances
-instead of their value. Internal representation is using CharField,
-thus only works for textual labels.
-* `fields.EChoiceIntegerField`, same as `EChoiceCharField` but using
-IntegerField, thus only works for numeric labels.
+* `fields.EChoiceCharField` deals directly with the enum instances instead of their value. Internal representation is
+using CharField, thus only works for textual labels.
+* `fields.EChoiceIntegerField`, same as `EChoiceCharField` but using IntegerField, thus only works for numeric labels.
 [**Not yet implemented**](#1).
-* `fields.MultipleEChoiceField`, similar to previous fields, but
-supports multiple values to be selected.
+* `fields.MultipleEChoiceField`, similar to previous fields, but supports multiple values to be selected.
 [**Not yet implemented**](#3).
 
 
@@ -73,7 +68,9 @@ Then, either use a regular model field:
 from django.db import models
 
 class MyModel(models.Model):
-    state = models.CharField(max_length=EStates.max_value_length(), choices=EStates.choices(), default=EStates.CREATED.value)
+    state = models.CharField(max_length=EStates.max_value_length(),
+                                                choices=EStates.choices(),
+                                                default=EStates.CREATED.value)
 ```
 **Note**: If your value is an `int`, you can use `models.IntegerField` instead.
 
@@ -93,16 +90,12 @@ from echoices.enums import EChoice
 
 class EMyChoice(EChoice):
     """
-    You can add your own fields to the `value` and `label` ones. To do
-    so, you have to override the __init__() and your signature must look
-    like: `self, value, label, *args` where you replace `*args` with
-    your own positional arguments, as you would do when defining a
-    custom Enum.
-    Do *not* call the super().__init__(), as `value` and `label` are
-    already set by `EChoice`.
+    You can add your own fields to the `value` and `label` ones. To do so, you have to override the __init__() and your
+    signature must look like: `self, value, label, *args` where you replace `*args` with your own positional arguments,
+    as you would do when defining a custom Enum.
+    Do *not* call the super().__init__(), as `value` and `label` are already set by `EChoice`.
 
-    As when dealing with a derived Enum, you can also add your own
-    methods.
+    As when dealing with a derived Enum, you can also add your own methods.
 
     """
 
