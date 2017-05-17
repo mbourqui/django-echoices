@@ -32,7 +32,7 @@ setup(
     ],
     keywords='django choices models enum',
     classifiers=[
-        'Development Status :: 3 - Alpha',
+        'Development Status :: 5 - Production/Stable',
         'Environment :: Web Environment',
         'Framework :: Django',
         'Framework :: Django :: 1.8',
