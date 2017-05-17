@@ -26,7 +26,7 @@ class EChoiceCharField(models.CharField):
         assert issubclass(echoices, EChoice)
         self.echoices = echoices
         kwargs['choices'] = self.echoices.choices()
-        kwargs['max_length'] = max([len(v) for v in self.echoices.values()])
+        kwargs['max_length'] = self.echoices.max_value_length()
         default = kwargs.get('default')
         if default:
             kwargs['default'] = default.value
