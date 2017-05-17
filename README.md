@@ -73,7 +73,7 @@ Then, either use a regular model field:
 from django.db import models
 
 class MyModel(models.Model):
-    state = models.CharField(choices=EStates.choices(), default=EStates.CREATED.value)
+    state = models.CharField(max_length=EStates.max_value_length(), choices=EStates.choices(), default=EStates.CREATED.value)
 ```
 **Note**: If your value is an `int`, you can use `models.IntegerField` instead.
 
@@ -83,7 +83,8 @@ from django.db import models
 from echoices.fields import EChoiceCharField
 
 class MyModel(models.Model):
-    state = EChoiceCharField(EStates)
+    # `max_length` is set automatically
+    state = EChoiceCharField(EStates, default=EStates.CREATED)
 ```
 
 ### Derivation
