@@ -1,8 +1,11 @@
 from django.db import models
 
-from echoices.enums import EChoice, EOrderedChoice
+from echoices.enums import EChoice, EOrderedChoice, EAutoChoice
 from echoices.fields import EChoiceCharField
 
+
+# ==========
+# EChoice
 
 class ETestCharChoices(EChoice):
     FIELD1 = ('u', 'Label 1')
@@ -38,6 +41,9 @@ class TestIntChoicesModel(models.Model):
 class TestEChoiceCharFieldEStrChoicesModel(models.Model):
     choice = EChoiceCharField(ETestStrChoices, default=ETestStrChoices.FIELD1)
 
+
+# ==========
+# EOrderedChoice
 
 class ETestCharOrderedChoices(EOrderedChoice):
     FIELD1 = ('w', 'Label 1')
@@ -75,3 +81,18 @@ class TestIntOrderedChoicesModel(models.Model):
 
 class TestEChoiceCharFieldEStrOrderedChoicesModel(models.Model):
     choice = EChoiceCharField(ETestStrOrderedChoices, default=ETestStrOrderedChoices.FIELD1)
+
+
+# ==========
+# EAutoChoice
+
+class ETestAutoChoices(EAutoChoice):
+    FIELD1 = 'Label 1'
+    FIELD2 = 'Label 2'
+    FIELD3 = 'Label 3'
+
+
+class TestAutoChoicesModel(models.Model):
+    choice = models.IntegerField(choices=ETestAutoChoices.choices(), default=ETestAutoChoices.FIELD1.value)
+
+# TODO: derive EChoice

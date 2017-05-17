@@ -2,8 +2,10 @@
 
 from django.test import TestCase
 
+from echoices.tests.models import ETestAutoChoices
 from echoices.tests.models import ETestCharChoices, ETestStrChoices, ETestIntChoices
 from echoices.tests.models import ETestCharOrderedChoices, ETestStrOrderedChoices, ETestIntOrderedChoices
+from echoices.tests.models import TestAutoChoicesModel
 from echoices.tests.models import TestCharChoicesModel, TestStrChoicesModel, TestIntChoicesModel
 from echoices.tests.models import TestCharOrderedChoicesModel, TestStrOrderedChoicesModel, TestIntOrderedChoicesModel
 from echoices.tests.models import TestEChoiceCharFieldEStrChoicesModel
@@ -80,7 +82,21 @@ class EOrderedChoiceTest(TestCase):
         TestIntOrderedChoicesModel.objects.create()
 
 
-# TODO: same tests for EAutoChoice
+class EAutoChoiceTest(TestCase):
+    def test_echoices(self):
+        self.assertEqual(ETestAutoChoices.values(), (1, 2, 3))
+        self.assertEqual(ETestAutoChoices.choices(), ((1, 'Label 1'), (2, 'Label 2'), (3, 'Label 3')))
+        self.assertEqual(ETestAutoChoices.choices('sorted'), ((1, 'Label 1'), (2, 'Label 2'), (3, 'Label 3')))
+        self.assertEqual(ETestAutoChoices.choices('reverse'), ((3, 'Label 3'), (2, 'Label 2'), (1, 'Label 1')))
+        self.assertEqual(ETestAutoChoices.choices('natural'), ((1, 'Label 1'), (2, 'Label 2'), (3, 'Label 3')))
+        self.assertEqual(ETestAutoChoices.choices('natural'), ETestAutoChoices.choices())
+        self.assertRaises(AssertionError, ETestAutoChoices.choices, 'foobar')
+        self.assertEqual(ETestAutoChoices.FIELD1.label, 'Label 1')
+        self.assertIs(ETestAutoChoices.from_value(2), ETestAutoChoices.FIELD2)
+
+    def test_create_empty_instances(self):
+        TestAutoChoicesModel.objects.create()
+
 
 class ChoiceCharFieldTest(TestCase):
     def test_create_empty_instance(self):
