@@ -23,7 +23,7 @@ class EChoiceCharField(models.CharField):
     description = _("An enhanced CharField supporting enumerated choices")
 
     def __init__(self, echoices, *args, **kwargs):
-        assert isinstance(echoices, EChoice)
+        assert issubclass(echoices, EChoice)
         self.echoices = echoices
         kwargs['choices'] = self.echoices.choices()
         kwargs['max_length'] = max([len(v) for v in self.echoices.values()])
