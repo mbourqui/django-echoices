@@ -42,6 +42,12 @@ class EChoice(Enum):
         return cls.__values_
 
     @classmethod
+    def max_value_length(cls):
+        if not hasattr(cls, '__max_value_length_'):
+            cls.__max_value_length_ = max([len(c.value) for c in list(cls)])
+        return cls.__max_value_length_
+
+    @classmethod
     def choices(cls):
         """
         Generate the choices as required by Django models.
