@@ -12,7 +12,7 @@ class EChoiceCharField(models.CharField):
     
     Parameters
     ----------
-    echoices : EChoice
+    echoices : sublcass of EChoice
         The choices this field supports.
     * args
         Are passed to models.CharField

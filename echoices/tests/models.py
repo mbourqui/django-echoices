@@ -1,12 +1,12 @@
 from django.db import models
 
-from echoices.enums import EChoice
+from echoices.enums import EChoice, EOrderedChoice
 from echoices.fields import EChoiceCharField
 
 
 class ETestCharChoices(EChoice):
-    FIELD1 = ('v', 'Label 1')
-    FIELD2 = ('w', 'Label 2')
+    FIELD1 = ('u', 'Label 1')
+    FIELD2 = ('v', 'Label 2')
 
 
 class ETestStrChoices(EChoice):
@@ -35,5 +35,43 @@ class TestIntChoicesModel(models.Model):
     choice = models.IntegerField(choices=ETestIntChoices.choices(), default=ETestIntChoices.FIELD1.value)
 
 
-class TestEChoiceCharFieldModel(models.Model):
-    choice = EChoiceCharField(ETestCharChoices, default=ETestCharChoices.FIELD1)
+class TestEChoiceCharFieldEStrChoicesModel(models.Model):
+    choice = EChoiceCharField(ETestStrChoices, default=ETestStrChoices.FIELD1)
+
+
+class ETestCharOrderedChoices(EOrderedChoice):
+    FIELD1 = ('w', 'Label 1')
+    FIELD2 = ('u', 'Label 2')
+    FIELD3 = ('v', 'Label 3')
+
+
+class ETestStrOrderedChoices(EOrderedChoice):
+    FIELD1 = ('value3', 'Label 1')
+    FIELD2 = ('value1', 'Label 2')
+    FIELD3 = ('value2', 'Label 3')
+
+
+class ETestIntOrderedChoices(EOrderedChoice):
+    FIELD1 = (30, 'Label 1')
+    FIELD2 = (10, 'Label 2')
+    FIELD3 = (20, 'Label 3')
+
+
+class TestCharOrderedChoicesModel(models.Model):
+    choice = models.CharField(max_length=ETestCharOrderedChoices.max_value_length(),
+                              choices=ETestCharOrderedChoices.choices(),
+                              default=ETestCharOrderedChoices.FIELD1.value)
+
+
+class TestStrOrderedChoicesModel(models.Model):
+    choice = models.CharField(max_length=ETestStrOrderedChoices.max_value_length(),
+                              choices=ETestStrOrderedChoices.choices(),
+                              default=ETestStrOrderedChoices.FIELD1.value)
+
+
+class TestIntOrderedChoicesModel(models.Model):
+    choice = models.IntegerField(choices=ETestIntOrderedChoices.choices(), default=ETestIntOrderedChoices.FIELD1.value)
+
+
+class TestEChoiceCharFieldEStrOrderedChoicesModel(models.Model):
+    choice = EChoiceCharField(ETestStrOrderedChoices, default=ETestStrOrderedChoices.FIELD1)

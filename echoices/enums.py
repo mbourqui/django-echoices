@@ -162,8 +162,7 @@ class EOrderedChoice(EChoice):
             else:
                 attr = '__choices_sorted_'
             if not hasattr(cls, attr):
-                setattr(cls, attr, tuple([(c.value, c.label)
-                                          for c in sorted(list(cls), reverse=reverse)]))
+                setattr(cls, attr, tuple([(c.value, c.label) for c in sorted(list(cls), reverse=reverse)]))
             return getattr(cls, attr)
         else:
             return super(EOrderedChoice, cls).choices()
