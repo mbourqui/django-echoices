@@ -37,9 +37,32 @@ class EChoice(Enum):
 
     @classmethod
     def values(cls):
+        """
+        
+        Returns
+        -------
+        tuple
+            of all the values of this Enum
+        
+        """
         if not hasattr(cls, '__values_'):
             cls.__values_ = tuple([c.value for c in list(cls)])
         return cls.__values_
+
+    @classmethod
+    def max_value_length(cls):
+        """
+        Not to be used when using numeric values.
+        
+        Returns
+        -------
+        int
+            the maximal length required by this Enum to be stored in the database
+
+        """
+        if not hasattr(cls, '__max_value_length_'):
+            cls.__max_value_length_ = max([len(c.value) for c in list(cls)])
+        return cls.__max_value_length_
 
     @classmethod
     def choices(cls):
@@ -82,7 +105,7 @@ class EChoice(Enum):
         except AttributeError:
             value2member_map_ = {}
             for echoice in list(cls):
-                value2member_map_.update({echoice.value: echoice})
+                value2member_map_[echoice.value] = echoice
             cls._value2member_map_ = value2member_map_
             return cls._value2member_map_[value]
 
