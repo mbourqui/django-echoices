@@ -38,6 +38,11 @@ class EChoice(Enum, metaclass=EChoiceMeta):
     Interface differs slightly from the Enum:
     `EChoice.value` returns the actual value to be stored in the DB, while the legacy `Enum.value`
     would return the whole tuple used when defining the enumeration item.
+    
+    Raises
+    ------
+    AttributeError
+        in case of duplicated values
 
     See Also
     --------
