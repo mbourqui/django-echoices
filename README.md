@@ -29,6 +29,16 @@ reversed. If `natural`, the order is the one used when instantiating the enumera
         SUBMITTED = 'Submitted'
     ```
 
+#### API
+##### Overriden EnumMeta methods
+* `EChoice.__getitem__()`, such that you can retrieve an `EChoice` instance using `EChoice['my_value']`
+
+##### Additional classmethods
+* `choices()` generates the choices as expected by a Django model field
+* `max_value_length()` returns the max length for the Django model field, if the values are strings
+* `values()` returns a list of all the values
+* `get(value, default=None)` returns the EChoice instance having that value, else returns the default
+
 ### Specialized model fields
 
 * `fields.EChoiceCharField` deals directly with the enum instances instead of their value. Internal representation is
