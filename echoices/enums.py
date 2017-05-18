@@ -1,9 +1,31 @@
-from abc import ABCMeta
-from enum import Enum
+import warnings
+from enum import Enum, EnumMeta
 from types import DynamicClassAttribute
 
 
-class EChoice(Enum):
+class EChoiceMeta(EnumMeta):
+    """
+    Used to override some methods.
+    
+    See Also
+    --------
+    https://blog.ionelmc.ro/2015/02/09/understanding-python-metaclasses/#restrictions-with-multiple-metaclasses
+    
+    """
+
+    def __getitem__(cls, value):
+        try:
+            # Should always be there (at least in Python 3.5)
+            return cls._value2member_map_[value]
+        except AttributeError:
+            value2member_map_ = {}
+            for echoice in list(cls):
+                value2member_map_[echoice.value] = echoice
+            cls._value2member_map_ = value2member_map_
+            return cls._value2member_map_[value]
+
+
+class EChoice(Enum, metaclass=EChoiceMeta):
     """
     Custom Enum to ease the usage of choices outside the model.
     
@@ -22,7 +44,6 @@ class EChoice(Enum):
     http://stackoverflow.com/a/24105344
 
     """
-    __metaclass__ = ABCMeta
 
     def __new__(cls, value, label, *args, **kwargs):
         if value in [c.value for c in list(cls)]:
@@ -102,20 +123,37 @@ class EChoice(Enum):
             if `value` does not exist in any element
 
         """
+        warnings.warn("{0}.{1} will be deprecated in a future release. "
+                      "Please use {0}.{2} instead".format(cls.__name__, cls.from_value.__name__, cls.get.__name__),
+                      PendingDeprecationWarning)
+        return cls[value]
+
+    @classmethod
+    def get(cls, value, default=None):
+        """
+        Return the EChoice object associated with this value, else `default`. If default is not given, it defaults to
+        None, so that this method never raises a KeyError.
+
+        Parameters
+        ----------
+        value
+            In the type of the `value` field, as set when instantiating this EChoice.
+        default
+            Returned if the value is not found.
+
+        Returns
+        -------
+        EChoice
+
+        """
         try:
-            # Should always be there (at least in Python 3.5)
-            return cls._value2member_map_[value]
-        except AttributeError:
-            value2member_map_ = {}
-            for echoice in list(cls):
-                value2member_map_[echoice.value] = echoice
-            cls._value2member_map_ = value2member_map_
-            return cls._value2member_map_[value]
+            return cls[value]
+        except KeyError:
+            return default
 
 
 class EOrderedChoice(EChoice):
     """Provide ordering of the elements"""
-    __metaclass__ = ABCMeta
 
     def __gt__(self, other):
         if self.__class__ is other.__class__:
@@ -170,7 +208,6 @@ class EAutoChoice(EOrderedChoice):
     https://docs.python.org/3.5/library/enum.html#autonumber
 
     """
-    __metaclass__ = ABCMeta
 
     def __new__(cls, label, *args, **kwargs):
         value = len(cls.__members__) + 1

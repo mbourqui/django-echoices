@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+import warnings
+
 from django.test import TestCase
 
 from echoices.tests.models import ETestAutoChoices
@@ -11,6 +13,8 @@ from echoices.tests.models import TestCharOrderedChoicesModel, TestStrOrderedCho
 from echoices.tests.models import TestEChoiceCharFieldEStrChoicesModel
 from echoices.tests.models import TestEChoiceCharFieldEStrOrderedChoicesModel
 
+warnings.simplefilter("always")
+
 
 class EChoiceTest(TestCase):
     def test_echoices(self):
@@ -18,18 +22,30 @@ class EChoiceTest(TestCase):
         self.assertEqual(ETestCharChoices.max_value_length(), 1)
         self.assertEqual(ETestCharChoices.choices(), (('u', 'Label 1'), ('v', 'Label 2')))
         self.assertEqual(ETestCharChoices.FIELD1.label, 'Label 1')
-        self.assertIs(ETestCharChoices.from_value('u'), ETestCharChoices.FIELD1)
 
         self.assertEqual(ETestStrChoices.values(), ('value1', 'value2'))
         self.assertEqual(ETestStrChoices.max_value_length(), 6)
         self.assertEqual(ETestStrChoices.choices(), (('value1', 'Label 1'), ('value2', 'Label 2')))
         self.assertEqual(ETestStrChoices.FIELD1.label, 'Label 1')
         self.assertIs(ETestStrChoices.from_value('value1'), ETestStrChoices.FIELD1)
+        self.assertRaises(KeyError, ETestStrChoices.from_value, 'foobar')
 
         self.assertEqual(ETestIntChoices.values(), (10, 20))
         self.assertEqual(ETestIntChoices.choices(), ((10, 'Label 1'), (20, 'Label 2')))
         self.assertEqual(ETestIntChoices.FIELD1.label, 'Label 1')
         self.assertIs(ETestIntChoices.from_value(10), ETestIntChoices.FIELD1)
+        self.assertRaises(KeyError, ETestIntChoices.from_value, -66)
+
+    def test_getitem(self):
+        self.assertEqual(ETestCharChoices.__getitem__('u'), ETestCharChoices.FIELD1)
+        self.assertIs(ETestCharChoices['u'], ETestCharChoices.FIELD1)
+        self.assertRaises(KeyError, ETestCharChoices.__getitem__, 'a')
+
+    def test_get(self):
+        self.assertIs(ETestCharChoices.get('u'), ETestCharChoices.FIELD1)
+        self.assertIs(ETestCharChoices.get('a'), None)
+        self.assertIs(ETestCharChoices.get('a'), None)
+        self.assertIs(ETestCharChoices.get('a', default=False), False)
 
     def test_create_empty_instances(self):
         TestCharChoicesModel.objects.create()
