@@ -51,9 +51,14 @@ class EChoice(Enum, metaclass=EChoiceMeta):
     """
 
     def __new__(cls, value, label, *args, **kwargs):
-        if value in [c.value for c in list(cls)]:
-            raise AttributeError(
-                "Duplicate value: '{}'. Only unique values are supported in {}.".format(value, EChoice))
+        if len(cls) == 0:
+            cls.__value_type_ = type(value)
+        else:
+            if type(value) is not cls.__value_type_:
+                raise TypeError("Incompatible type: {}. All values must be {}.".format(type(value), cls.__value_type_))
+            if value in [c.value for c in list(cls)]:
+                raise AttributeError(
+                    "Duplicate value: '{}'. Only unique values are supported in {}.".format(value, EChoice))
         obj = object.__new__(cls)
         obj._value_ = value  # Overrides default _value_
         obj._label_ = label

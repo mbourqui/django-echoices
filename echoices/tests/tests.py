@@ -64,6 +64,16 @@ class EChoiceTest(TestCase):
 
         self.assertRaises(AttributeError, init_duplicated)
 
+    def test_mixed_values(self):
+        def init_mixed():
+            from echoices.enums import EChoice
+
+            class EMixedChoices(EChoice):
+                FIELD1 = ('u', 'Label 1')
+                FIELD2 = (2, 'Label 2')
+
+        self.assertRaises(TypeError, init_mixed)
+
     def test_create_empty_instances(self):
         TestCharChoicesModel.objects.create()
         TestStrChoicesModel.objects.create()
