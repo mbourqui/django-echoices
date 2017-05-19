@@ -4,7 +4,7 @@
 #author         :https://github.com/mbourqui
 #date           :20170419
 #version        :1.0
-#usage		    :bash pypi_packager.sh
+#usage          :bash pypi_packager.sh
 #notes          :In case of submission to PyPI, ~/.pypirc must be set accordingly
 #==============================================================================
 
@@ -12,7 +12,7 @@
 PROGRAM_NAME=$(basename "$0")
 VERSION=1.0
 PROJECT_NAME=$(basename $(pwd))
-PACKAGE_NAME=${PROJECT_NAME/-/_}  # Replace - with _
+PACKAGE_NAME=${PROJECT_NAME//-/_}  # Replace all - with _
 
 usage() {
 echo "Usage: $PROGRAM_NAME [-h,--help,-v,--version] [-s,--submit|-t,--test]
