@@ -21,10 +21,12 @@ def make_echoicefield(echoices, *args, **kwargs):
     """
     assert issubclass(echoices, EChoice)
     value_type = echoices.__getvaluetype__()
-    if value_type is int:
-        cls_ = models.IntegerField
-    elif value_type is str:
+    if value_type is str:
         cls_ = models.CharField
+    elif value_type is int:
+        cls_ = models.IntegerField
+    elif value_type is float:
+        cls_ = models.FloatField
     elif value_type is bool:
         cls_ = models.BooleanField
     else:
@@ -32,7 +34,7 @@ def make_echoicefield(echoices, *args, **kwargs):
                                   "https://github.com/mbourqui/django-echoices/issues/new")
     d = dict(cls_.__dict__)
     d.update(dict(EChoiceField.__dict__))
-    return type(echoices.__name__ + 'Field', (cls_, ), d)(echoices, *args, **kwargs)
+    return type(echoices.__name__ + 'Field', (cls_,), d)(echoices, *args, **kwargs)
 
 
 class EChoiceField(models.Field):

@@ -22,6 +22,11 @@ class ETestIntChoices(EChoice):
     FIELD2 = (20, 'Label 2')
 
 
+class ETestFloatChoices(EChoice):
+    FIELD1 = (1.0, 'Label 1')
+    FIELD2 = (2.0, 'Label 2')
+
+
 class ETestBoolChoices(EChoice):
     FIELD1 = (True, 'Label 1')
     FIELD2 = (False, 'Label 2')
@@ -49,6 +54,10 @@ class TestEChoiceFieldEStrChoicesModel(models.Model):
 
 class TestEChoiceFieldEIntChoicesModel(models.Model):
     choice = make_echoicefield(ETestIntChoices, default=ETestIntChoices.FIELD1)
+
+
+class TestEChoiceFieldEFloatChoicesModel(models.Model):
+    choice = make_echoicefield(ETestFloatChoices, default=ETestFloatChoices.FIELD1)
 
 
 class TestEChoiceFieldEBoolChoicesModel(models.Model):
