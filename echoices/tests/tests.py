@@ -10,10 +10,9 @@ from echoices.tests.models import ETestCharOrderedChoices, ETestStrOrderedChoice
 from echoices.tests.models import TestAutoChoicesModel
 from echoices.tests.models import TestCharChoicesModel, TestStrChoicesModel, TestIntChoicesModel
 from echoices.tests.models import TestCharOrderedChoicesModel, TestStrOrderedChoicesModel, TestIntOrderedChoicesModel
-from echoices.tests.models import TestEChoiceCharFieldEStrChoicesModel
 from echoices.tests.models import TestEChoiceCharFieldEStrOrderedChoicesModel
-
-from django.db import models
+from echoices.tests.models import TestEChoiceFieldEIntChoicesModel
+from echoices.tests.models import TestEChoiceFieldEStrChoicesModel
 
 warnings.simplefilter("always")
 
@@ -158,7 +157,7 @@ class EAutoChoiceTest(TestCase):
         self.assertEqual(ETestAutoChoices.values(), (1, 2, 3))
 
     def test_fromvalue(self):
-        self.assertIs(ETestAutoChoices.from_value(2), ETestAutoChoices.FIELD2)
+        self.assertIs(ETestAutoChoices[2], ETestAutoChoices.FIELD2)
 
     def test_get(self):
         self.assertIs(ETestAutoChoices.get(2), ETestAutoChoices.FIELD2)
@@ -183,18 +182,35 @@ class EAutoChoiceTest(TestCase):
 
 class ChoiceCharFieldTest(TestCase):
     def test_create_empty_instance(self):
-        TestEChoiceCharFieldEStrChoicesModel.objects.create()
+        TestEChoiceFieldEStrChoicesModel.objects.create()
 
     def test_create_instance(self):
-        instance = TestEChoiceCharFieldEStrChoicesModel.objects.create(choice=ETestStrChoices.FIELD1)
+        instance = TestEChoiceFieldEStrChoicesModel.objects.create(choice=ETestStrChoices.FIELD1)
         choice = instance.choice
-        self.assertIsInstance(choice, models.CharField)
+        self.assertIsInstance(choice, ETestStrChoices)
         self.assertIs(choice, ETestStrChoices.FIELD1)
         self.assertEqual(choice.value, 'value1')
         self.assertEqual(choice.label, 'Label 1')
         self.assertEqual(instance._meta.fields[1].choices, ETestStrChoices.choices())
         self.assertIs(instance._meta.fields[1].default, ETestStrChoices.FIELD1.value)
         self.assertIs(instance._meta.fields[1].get_default(), ETestStrChoices.FIELD1)
+        instance.delete()
+
+
+class ChoiceIntFieldTest(TestCase):
+    def test_create_empty_instance(self):
+        TestEChoiceFieldEIntChoicesModel.objects.create()
+
+    def test_create_instance(self):
+        instance = TestEChoiceFieldEIntChoicesModel.objects.create(choice=ETestIntChoices.FIELD1)
+        choice = instance.choice
+        self.assertIsInstance(choice, ETestIntChoices)
+        self.assertIs(choice, ETestIntChoices.FIELD1)
+        self.assertEqual(choice.value, 10)
+        self.assertEqual(choice.label, 'Label 1')
+        self.assertEqual(instance._meta.fields[1].choices, ETestIntChoices.choices())
+        self.assertIs(instance._meta.fields[1].default, ETestIntChoices.FIELD1.value)
+        self.assertIs(instance._meta.fields[1].get_default(), ETestIntChoices.FIELD1)
         instance.delete()
 
 

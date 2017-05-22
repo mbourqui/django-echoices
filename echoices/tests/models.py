@@ -1,7 +1,7 @@
 from django.db import models
 
 from echoices.enums import EChoice, EOrderedChoice, EAutoChoice
-from echoices.fields import EChoiceCharField
+from echoices.fields import make_echoicefield
 
 
 # ==========
@@ -38,8 +38,12 @@ class TestIntChoicesModel(models.Model):
     choice = models.IntegerField(choices=ETestIntChoices.choices(), default=ETestIntChoices.FIELD1.value)
 
 
-class TestEChoiceCharFieldEStrChoicesModel(models.Model):
-    choice = EChoiceCharField(ETestStrChoices, default=ETestStrChoices.FIELD1)
+class TestEChoiceFieldEStrChoicesModel(models.Model):
+    choice = make_echoicefield(ETestStrChoices, default=ETestStrChoices.FIELD1)
+
+
+class TestEChoiceFieldEIntChoicesModel(models.Model):
+    choice = make_echoicefield(ETestIntChoices, default=ETestIntChoices.FIELD1)
 
 
 # ==========
@@ -80,7 +84,7 @@ class TestIntOrderedChoicesModel(models.Model):
 
 
 class TestEChoiceCharFieldEStrOrderedChoicesModel(models.Model):
-    choice = EChoiceCharField(ETestStrOrderedChoices, default=ETestStrOrderedChoices.FIELD1)
+    choice = make_echoicefield(ETestStrOrderedChoices, default=ETestStrOrderedChoices.FIELD1)
 
 
 # ==========
