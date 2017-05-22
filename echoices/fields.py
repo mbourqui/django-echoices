@@ -20,6 +20,8 @@ def make_echoicefield(echoices, *args, **kwargs):
     Returns
     -------
     EChoiceField
+        For Django>=1.9, the exact name of the returned Field is based on the name of the `echoices` with a suffixed
+        'Field'. For older Django, the returned name of the class is `EChoiceField`.
 
     """
     assert issubclass(echoices, EChoice)
