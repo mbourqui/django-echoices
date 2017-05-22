@@ -1,3 +1,6 @@
+from distutils.version import StrictVersion
+
+from django import get_version as django_version
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
@@ -34,7 +37,11 @@ def make_echoicefield(echoices, *args, **kwargs):
                                   "https://github.com/mbourqui/django-echoices/issues/new")
     d = dict(cls_.__dict__)
     d.update(dict(EChoiceField.__dict__))
-    return type(echoices.__name__ + 'Field', (cls_,), d)(echoices, *args, **kwargs)
+    if StrictVersion(django_version()) >= StrictVersion('1.9.0'):
+        cls_name = "{}Field".format(echoices.__name__)
+    else:
+        cls_name = EChoiceField.__name__
+    return type(cls_name, (cls_,), d)(echoices, *args, **kwargs)
 
 
 class EChoiceField(models.Field):
