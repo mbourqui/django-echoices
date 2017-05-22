@@ -25,6 +25,8 @@ def make_echoicefield(echoices, *args, **kwargs):
         cls_ = models.IntegerField
     elif value_type is str:
         cls_ = models.CharField
+    elif value_type is bool:
+        cls_ = models.BooleanField
     else:
         raise NotImplementedError("Please open an issue if you wish to see your value type supported: "
                                   "https://github.com/mbourqui/django-echoices/issues/new")

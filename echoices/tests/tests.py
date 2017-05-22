@@ -5,12 +5,13 @@ import warnings
 from django.test import TestCase
 
 from echoices.tests.models import ETestAutoChoices
-from echoices.tests.models import ETestCharChoices, ETestStrChoices, ETestIntChoices
+from echoices.tests.models import ETestCharChoices, ETestStrChoices, ETestIntChoices, ETestBoolChoices
 from echoices.tests.models import ETestCharOrderedChoices, ETestStrOrderedChoices, ETestIntOrderedChoices
 from echoices.tests.models import TestAutoChoicesModel
 from echoices.tests.models import TestCharChoicesModel, TestStrChoicesModel, TestIntChoicesModel
 from echoices.tests.models import TestCharOrderedChoicesModel, TestStrOrderedChoicesModel, TestIntOrderedChoicesModel
 from echoices.tests.models import TestEChoiceCharFieldEStrOrderedChoicesModel
+from echoices.tests.models import TestEChoiceFieldEBoolChoicesModel
 from echoices.tests.models import TestEChoiceFieldEIntChoicesModel
 from echoices.tests.models import TestEChoiceFieldEStrChoicesModel
 
@@ -211,6 +212,23 @@ class ChoiceIntFieldTest(TestCase):
         self.assertEqual(instance._meta.fields[1].choices, ETestIntChoices.choices())
         self.assertIs(instance._meta.fields[1].default, ETestIntChoices.FIELD1.value)
         self.assertIs(instance._meta.fields[1].get_default(), ETestIntChoices.FIELD1)
+        instance.delete()
+
+
+class ChoiceBoolFieldTest(TestCase):
+    def test_create_empty_instance(self):
+        TestEChoiceFieldEBoolChoicesModel.objects.create()
+
+    def test_create_instance(self):
+        instance = TestEChoiceFieldEBoolChoicesModel.objects.create(choice=ETestBoolChoices.FIELD1)
+        choice = instance.choice
+        self.assertIsInstance(choice, ETestBoolChoices)
+        self.assertIs(choice, ETestBoolChoices.FIELD1)
+        self.assertTrue(choice.value)
+        self.assertEqual(choice.label, 'Label 1')
+        self.assertEqual(instance._meta.fields[1].choices, ETestBoolChoices.choices())
+        self.assertTrue(instance._meta.fields[1].default)
+        self.assertIs(instance._meta.fields[1].get_default(), ETestBoolChoices.FIELD1)
         instance.delete()
 
 

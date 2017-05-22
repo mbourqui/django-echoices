@@ -22,6 +22,11 @@ class ETestIntChoices(EChoice):
     FIELD2 = (20, 'Label 2')
 
 
+class ETestBoolChoices(EChoice):
+    FIELD1 = (True, 'Label 1')
+    FIELD2 = (False, 'Label 2')
+
+
 class TestCharChoicesModel(models.Model):
     choice = models.CharField(max_length=ETestCharChoices.max_value_length(),
                               choices=ETestCharChoices.choices(),
@@ -44,6 +49,10 @@ class TestEChoiceFieldEStrChoicesModel(models.Model):
 
 class TestEChoiceFieldEIntChoicesModel(models.Model):
     choice = make_echoicefield(ETestIntChoices, default=ETestIntChoices.FIELD1)
+
+
+class TestEChoiceFieldEBoolChoicesModel(models.Model):
+    choice = make_echoicefield(ETestBoolChoices, default=ETestBoolChoices.FIELD1)
 
 
 # ==========
