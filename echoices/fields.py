@@ -30,7 +30,7 @@ def make_echoicefield(echoices, *args, **kwargs):
     elif value_type is bool:
         cls_ = models.BooleanField
     else:
-        raise NotImplementedError("Please open an issue if you wish to see your value type supported: "
+        raise NotImplementedError("Please open an issue if you wish your value type to be supported: "
                                   "https://github.com/mbourqui/django-echoices/issues/new")
     d = dict(cls_.__dict__)
     d.update(dict(EChoiceField.__dict__))

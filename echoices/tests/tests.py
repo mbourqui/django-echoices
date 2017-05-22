@@ -4,11 +4,11 @@ import warnings
 
 from django.test import TestCase
 
-from echoices.tests.models import ETestCharChoices, ETestStrChoices
-from echoices.tests.models import ETestIntChoices, ETestFloatChoices
-from echoices.tests.models import ETestBoolChoices
 from echoices.tests.models import ETestAutoChoices
+from echoices.tests.models import ETestBoolChoices
+from echoices.tests.models import ETestCharChoices, ETestStrChoices
 from echoices.tests.models import ETestCharOrderedChoices, ETestStrOrderedChoices, ETestIntOrderedChoices
+from echoices.tests.models import ETestIntChoices, ETestFloatChoices
 from echoices.tests.models import TestAutoChoicesModel
 from echoices.tests.models import TestCharChoicesModel, TestStrChoicesModel, TestIntChoicesModel
 from echoices.tests.models import TestCharOrderedChoicesModel, TestStrOrderedChoicesModel, TestIntOrderedChoicesModel
@@ -250,6 +250,23 @@ class ChoiceBoolFieldTest(TestCase):
         self.assertTrue(instance._meta.fields[1].default)
         self.assertIs(instance._meta.fields[1].get_default(), ETestBoolChoices.FIELD1)
         instance.delete()
+
+
+class ChoiceComplexFieldTest(TestCase):
+    def test_create_empty_instance(self):
+        def create():
+            from echoices.enums import EChoice
+
+            class ETestComplexChoices(EChoice):
+                FIELD1 = (1 + 1j, 'Label 1')
+                FIELD2 = (2 + 1j, 'Label 2')
+
+            from django.db import models
+            class TestEChoiceFieldEComplexChoicesModel(models.Model):
+                from echoices.fields import make_echoicefield
+                choice = make_echoicefield(ETestComplexChoices, default=ETestComplexChoices.FIELD1)
+
+        self.assertRaises(NotImplementedError, create)
 
 
 class OrderedChoiceCharFieldTest(TestCase):
