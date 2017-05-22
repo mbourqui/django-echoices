@@ -4,7 +4,7 @@ from django.utils.translation import ugettext_lazy as _
 from .enums import EChoice
 
 
-class EChoiceCharField(models.CharField):
+class EChoiceCharField(models.Field):
     """
     Specialized field for single choices
     
@@ -22,15 +22,28 @@ class EChoiceCharField(models.CharField):
     """
     description = _("An enhanced CharField supporting enumerated choices")
 
-    def __init__(self, echoices, *args, **kwargs):
+    def __new__(cls, echoices, *args, **kwargs):
         assert issubclass(echoices, EChoice)
+        value_type = echoices.__getvaluetype__()
+        if value_type is int:
+            cls_ = models.IntegerField
+        elif value_type is str:
+            cls_ = models.CharField
+        elif value_type is bool:
+            cls_ = models.BooleanField
+        else:
+            raise NotImplementedError
+        return type('EChoiceField', (cls_,), dict(EChoiceCharField.__dict__))
+
+    def __init__(self, echoices, *args, **kwargs):
         self.echoices = echoices
         kwargs['choices'] = self.echoices.choices()
         kwargs['max_length'] = self.echoices.max_value_length()
         default = kwargs.get('default')
         if default:
             kwargs['default'] = default.value
-        super(EChoiceCharField, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
+
 
     def get_default(self):
         default = super(EChoiceCharField, self).get_default()

@@ -13,6 +13,8 @@ from echoices.tests.models import TestCharOrderedChoicesModel, TestStrOrderedCho
 from echoices.tests.models import TestEChoiceCharFieldEStrChoicesModel
 from echoices.tests.models import TestEChoiceCharFieldEStrOrderedChoicesModel
 
+from django.db import models
+
 warnings.simplefilter("always")
 
 
@@ -186,6 +188,7 @@ class ChoiceCharFieldTest(TestCase):
     def test_create_instance(self):
         instance = TestEChoiceCharFieldEStrChoicesModel.objects.create(choice=ETestStrChoices.FIELD1)
         choice = instance.choice
+        self.assertIsInstance(choice, models.CharField)
         self.assertIs(choice, ETestStrChoices.FIELD1)
         self.assertEqual(choice.value, 'value1')
         self.assertEqual(choice.label, 'Label 1')

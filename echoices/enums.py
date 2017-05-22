@@ -161,6 +161,10 @@ class EChoice(Enum, metaclass=EChoiceMeta):
         except KeyError:
             return default
 
+    @classmethod
+    def __getvaluetype__(cls):
+        return cls.__value_type_
+
 
 class EOrderedChoice(EChoice):
     """Provide ordering of the elements"""
