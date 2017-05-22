@@ -85,7 +85,9 @@ class EChoiceField(models.Field):
         return self.echoices[value]
 
     def get_prep_value(self, value):
-        return str(value.value)
+        if value:
+            return value.value
+        return value
 
     def deconstruct(self):
         name, path, args, kwargs = super(self.__class__, self).deconstruct()
