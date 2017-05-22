@@ -11,42 +11,8 @@
 
 ## Features
 
-### Specialized enum types
-
-* `enums.EChoice` is the base enum type. Each enum element is a tuple `(value, label)`, where <cite>[t]he first element
-in each tuple is the actual value to be set on the model, and the second element is the human-readable name</cite>&nbsp;
-<sup>[doc](https://docs.djangoproject.com/en/1.11/ref/models/fields/#choices)</sup>. Values **must** be unique. Can be
-derived for further customization.
-* `enums.EOrderedChoice` supports ordering of elements. `EOrderedChoice.choices()` takes an extra optional argument,
-`order`, which supports three values: 'sorted', 'reverse' or 'natural' (default). If `sorted`, the choices are ordered
-according to their value. If `reverse`, the choices are ordered according to their value as if each comparison were
-reversed. If `natural`, the order is the one used when instantiating the enumeration.
-* `enums.EAutoChoice`, generates auto-incremented numeric values. It's then used like
-    ```
-    class EStates(EAutoChoice):
-        # format is: label -> str
-        CREATED = 'Created'
-        SUBMITTED = 'Submitted'
-    ```
-
-#### API
-##### Overriden EnumMeta methods
-* `EChoice.__getitem__()`, such that you can retrieve an `EChoice` instance using `EChoice['my_value']`
-
-##### Additional classmethods
-* `choices()` generates the choices as expected by a Django model field
-* `max_value_length()` returns the max length for the Django model field, if the values are strings
-* `values()` returns a list of all the values
-* `get(value, default=None)` returns the EChoice instance having that value, else returns the default
-
-### Specialized model fields
-
-* `fields.EChoiceCharField` deals directly with the enum instances instead of their value. Internal representation is
-using CharField, thus only works for textual labels.
-* `fields.EChoiceIntegerField`, same as `EChoiceCharField` but using IntegerField, thus only works for numeric labels.
-[**Not yet implemented**](#1).
-* `fields.MultipleEChoiceField`, similar to previous fields, but supports multiple values to be selected.
-[**Not yet implemented**](#3).
+* Specialized [enum types](#enum)
+* Specialized [model fields](#modelfield)
 
 
 ## Requirements
@@ -60,12 +26,13 @@ using CharField, thus only works for textual labels.
 
 
 ## Usage
+
+### Enumeration
 First, define your choices enumeration (in your `models.py` for example):
+
 ```
-from enum import unique
 from echoices.enums import EChoice
 
-@unique
 class EStates(EChoice):
     # format is: (value -> char or str or int, label -> str)
     CREATED = ('c', 'Created')
@@ -73,7 +40,10 @@ class EStates(EChoice):
 
 ```
 
+### Model field
+#### Regular model field
 Then, either use a regular model field:
+
 ```
 from django.db import models
 
@@ -82,37 +52,106 @@ class MyModel(models.Model):
                              choices=EStates.choices(),
                              default=EStates.CREATED.value)
 ```
+
 **Note**: If your value is an `int`, you can use `models.IntegerField` instead.
 
-or a specialized field:
+#### Specialized field
+You can also use specialized field. Using such a field, you will then only handle `Echoice` instances.
+
 ```
 from django.db import models
-from echoices.fields import EChoiceCharField
+from echoices.fields import make_echoicefield
 
 class MyModel(models.Model):
     # `max_length` is set automatically
-    state = EChoiceCharField(EStates, default=EStates.CREATED)
+    state = make_echoicefield(EStates, default=EStates.CREATED)
 ```
 
+**Note**: `MyModel.state` will be `Estates` instance stored in a `EStatesField` field. See [documentation](#modelfield)
+for more details.
+
 ### Derivation
+
+You can add your own fields to the `value` and `label` ones. To do so, you have to override the __init__() and your
+signature must look like: `self, value, label, *args` where you replace `*args` with your own positional arguments, as
+you would do when defining a custom Enum. Do *not* call the super().__init__(), as `value` and `label` are already set
+internally by `EChoice`.
+
+As when dealing with a derived Enum, you can also add your own methods.
+
 ```
 from echoices.enums import EChoice
 
-class EMyChoice(EChoice):
-    """
-    You can add your own fields to the `value` and `label` ones. To do so, you have to override the
-    __init__() and your signature must look like: `self, value, label, *args` where you replace `*args`
-    with your own positional arguments, as you would do when defining a custom Enum.
-    Do *not* call the super().__init__(), as `value` and `label` are already set by `EChoice`.
+class EMyChoices(EChoice):
+    """Another variant of EChoice with additionnal content"""
 
-    As when dealing with a derived Enum, you can also add your own methods.
-
-    """
-
-    MY_CHOICE = (1, 'First choice', 'my value')
+    MY_CHOICE = (1, 'First choice', 'my additional value')
 
     def __init__(self, value, label, my_arg):
         self.my_arg = my_arg
         # Note: super().__init__() shall *not* be called!
 
+    def show_myarg(self):
+        """Used as: EMyChoices.MY_CHOICE.show_myarg()"""
+        print(self.my_arg)
+
+    @classmethod
+    def show_all(cls):
+        """Used as: EMyChoices.show_all()"""
+        print(", ".join([e.my_arg for e in list(cls)]))
 ```
+
+
+## Short documentation
+
+### <a name="enum"></a>Specialized enum types
+
+#### `enums.EChoice`
+Base enum type. Each enum element is a tuple `(value, label)`, where <cite>[t]he first element
+in each tuple is the actual value to be set on the model, and the second element is the human-readable name</cite>&nbsp;
+<sup>[doc](https://docs.djangoproject.com/en/1.11/ref/models/fields/#choices)</sup>. Values **must** be unique. Can be
+derived for further customization.
+#### `enums.EOrderedChoice`
+Supports ordering of elements. `EOrderedChoice.choices()` takes an extra optional argument,
+`order`, which supports three values: 'sorted', 'reverse' or 'natural' (default). If `sorted`, the choices are ordered
+according to their value. If `reverse`, the choices are ordered according to their value as if each comparison were
+reversed. If `natural`, the order is the one used when instantiating the enumeration.
+#### `enums.EAutoChoice`
+Generates auto-incremented numeric values. It's then used like:
+
+```
+from echoices.enums import EAutoChoice
+
+class EStates(EAutoChoice):
+    # format is: label -> str
+    CREATED = 'Created'
+    SUBMITTED = 'Submitted'
+```
+
+#### API
+##### Overriden EnumMeta methods
+* `EChoice.__getitem__()`, such that you can retrieve an `EChoice` instance using `EChoice['my_value']`
+
+##### Additional classmethods
+* `choices()` generates the choices as expected by a Django model field
+* `max_value_length()` returns the max length for the Django model field, if the values are strings
+* `values()` returns a list of all the values
+* `get(value, default=None)` returns the EChoice instance having that value, else returns the default
+
+### <a name="modelfield"></a>Specialized model fields
+
+#### `fields.EChoiceField` via `fields.make_echoicefield()`
+Deal directly with the enum instances instead of their DB storage value. The specialized field will be derived from a
+`models.Field` subclass, the internal representation is deduced from the value type. So for example if the values are
+strings, then the the `EChoiceField` will subclass `models.CharField`; and if the values are integers then it will be
+`models.IntegerField`. Actually supports `str`, `int`, `float` and (non-null) `bool` as enum values.
+
+`make_echoicefield()` will return an instance of `EChoiceField` which subclasses a field type from `models.CharField`.
+The exact name of the field type will be `MyEnumNameField` in Django >= 1.9, note the suffixed 'Field'. For earlier
+versions of Django, it will be `EChoiceField`.
+
+Thus, `MyModel.my_echoice_field` will be an `EChoice` instance stored in an `EChoiceField` field.
+
+#### `fields.MultipleEChoiceField`
+Similar to previous fields, but supports multiple values to be selected.
+[**Not yet implemented**](#3).
