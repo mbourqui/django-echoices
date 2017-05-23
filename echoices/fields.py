@@ -1,3 +1,4 @@
+import warnings
 from distutils.version import StrictVersion
 
 from django import get_version as django_version
@@ -108,11 +109,11 @@ def make_echoicefield(echoices, *args, klass_name=None, **kwargs):
     else:
         raise NotImplementedError("Please open an issue if you wish your value type to be supported: "
                                   "https://github.com/mbourqui/django-echoices/issues/new")
-    klass_name = klass_name if klass_name else \
-        "{}Field".format(echoices.__name__) if StrictVersion(django_version()) >= StrictVersion('1.9.0') else \
-            EChoiceField.__name__
+    if klass_name and StrictVersion(django_version()) < StrictVersion('1.9.0'):
+        warnings.warn("Django < 1.9 throws an 'ImportError' if the class name is not defined in the module. "
+                      "The provided klass_name will be replaced by {}".format(EChoiceField.__name__), RuntimeWarning)
+    klass_name = EChoiceField.__name__ if StrictVersion(django_version()) < StrictVersion('1.9.0') else \
+        klass_name if klass_name else "{}Field".format(echoices.__name__)
     d = dict(cls_.__dict__)
     d.update(dict(EChoiceField.__dict__))
-    return type(klass_name, (cls_,), d)(echoices, *args, **kwargs)
-
-# TODO: MultipleEChoiceField
+    return type(klass_name, (cls_,), d)(echoices, *args, **kwargs)  # TODO: MultipleEChoiceField

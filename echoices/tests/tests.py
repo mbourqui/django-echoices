@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 
 import warnings
+from distutils.version import StrictVersion
 
+from django import get_version as django_version
 from django.db import models
 from django.test import TestCase
 
@@ -222,7 +224,10 @@ class ChoiceCharFieldTest(TestCase):
         self.assertIs(choice, ETestStrChoices.FIELD1)
         self.assertEqual(choice.value, 'value1')
         self.assertEqual(choice.label, 'Label 1')
-        self.assertEqual(instance._meta.fields[1].__class__.__name__, 'MyEnumFieldName')
+        if StrictVersion(django_version()) < StrictVersion('1.9.0'):
+            self.assertEqual(instance._meta.fields[1].__class__.__name__, 'EChoiceField')
+        else:
+            self.assertEqual(instance._meta.fields[1].__class__.__name__, 'MyEnumFieldName')
         self.assertEqual(instance._meta.fields[1].choices, ETestStrChoices.choices())
         self.assertIs(instance._meta.fields[1].default, models.fields.NOT_PROVIDED)
         self.assertEqual(instance._meta.fields[1].get_default(), '')
