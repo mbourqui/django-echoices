@@ -211,7 +211,10 @@ class ChoiceCharFieldTest(TestCase):
         self.assertIs(choice, ETestStrChoices.FIELD1)
         self.assertEqual(choice.value, 'value1')
         self.assertEqual(choice.label, 'Label 1')
-        self.assertEqual(instance._meta.fields[1].__class__.__name__, 'ETestStrChoicesField')
+        if StrictVersion(django_version()) < StrictVersion('1.9.0'):
+            self.assertEqual(instance._meta.fields[1].__class__.__name__, 'EChoiceField')
+        else:
+            self.assertEqual(instance._meta.fields[1].__class__.__name__, 'ETestStrChoicesField')
         self.assertEqual(instance._meta.fields[1].choices, ETestStrChoices.choices())
         self.assertIs(instance._meta.fields[1].default, models.fields.NOT_PROVIDED)
         self.assertEqual(instance._meta.fields[1].get_default(), '')
@@ -240,7 +243,10 @@ class ChoiceCharFieldTest(TestCase):
         self.assertIs(choice, ETestStrChoices.FIELD1)
         self.assertEqual(choice.value, 'value1')
         self.assertEqual(choice.label, 'Label 1')
-        self.assertEqual(instance._meta.fields[1].__class__.__name__, 'ETestStrChoicesField')
+        if StrictVersion(django_version()) < StrictVersion('1.9.0'):
+            self.assertEqual(instance._meta.fields[1].__class__.__name__, 'EChoiceField')
+        else:
+            self.assertEqual(instance._meta.fields[1].__class__.__name__, 'ETestStrChoicesField')
         self.assertEqual(instance._meta.fields[1].choices, ETestStrChoices.choices())
         self.assertIs(instance._meta.fields[1].default, ETestStrChoices.FIELD1.value)
         self.assertIs(instance._meta.fields[1].get_default(), ETestStrChoices.FIELD1)
@@ -259,7 +265,10 @@ class ChoiceIntFieldTest(TestCase):
         self.assertIs(choice, ETestIntChoices.FIELD1)
         self.assertEqual(choice.value, 10)
         self.assertEqual(choice.label, 'Label 1')
-        self.assertEqual(instance._meta.fields[1].__class__.__name__, 'ETestIntChoicesField')
+        if StrictVersion(django_version()) < StrictVersion('1.9.0'):
+            self.assertEqual(instance._meta.fields[1].__class__.__name__, 'EChoiceField')
+        else:
+            self.assertEqual(instance._meta.fields[1].__class__.__name__, 'ETestIntChoicesField')
         self.assertEqual(instance._meta.fields[1].choices, ETestIntChoices.choices())
         self.assertIs(instance._meta.fields[1].default, models.fields.NOT_PROVIDED)
         self.assertIsNone(instance._meta.fields[1].get_default())
@@ -272,7 +281,10 @@ class ChoiceIntFieldTest(TestCase):
         self.assertIs(choice, ETestIntChoices.FIELD1)
         self.assertEqual(choice.value, 10)
         self.assertEqual(choice.label, 'Label 1')
-        self.assertEqual(instance._meta.fields[1].__class__.__name__, 'ETestIntChoicesField')
+        if StrictVersion(django_version()) < StrictVersion('1.9.0'):
+            self.assertEqual(instance._meta.fields[1].__class__.__name__, 'EChoiceField')
+        else:
+            self.assertEqual(instance._meta.fields[1].__class__.__name__, 'ETestIntChoicesField')
         self.assertEqual(instance._meta.fields[1].choices, ETestIntChoices.choices())
         self.assertIs(instance._meta.fields[1].default, ETestIntChoices.FIELD1.value)
         self.assertIs(instance._meta.fields[1].get_default(), ETestIntChoices.FIELD1)
@@ -291,7 +303,10 @@ class ChoiceFloatFieldTest(TestCase):
         self.assertIs(choice, ETestFloatChoices.FIELD1)
         self.assertEqual(choice.value, 1.0)
         self.assertEqual(choice.label, 'Label 1')
-        self.assertEqual(instance._meta.fields[1].__class__.__name__, 'ETestFloatChoicesField')
+        if StrictVersion(django_version()) < StrictVersion('1.9.0'):
+            self.assertEqual(instance._meta.fields[1].__class__.__name__, 'EChoiceField')
+        else:
+            self.assertEqual(instance._meta.fields[1].__class__.__name__, 'ETestFloatChoicesField')
         self.assertEqual(instance._meta.fields[1].choices, ETestFloatChoices.choices())
         self.assertIs(instance._meta.fields[1].default, models.fields.NOT_PROVIDED)
         self.assertIs(instance._meta.fields[1].get_default(), None)
@@ -304,7 +319,10 @@ class ChoiceFloatFieldTest(TestCase):
         self.assertIs(choice, ETestFloatChoices.FIELD1)
         self.assertEqual(choice.value, 1.0)
         self.assertEqual(choice.label, 'Label 1')
-        self.assertEqual(instance._meta.fields[1].__class__.__name__, 'ETestFloatChoicesField')
+        if StrictVersion(django_version()) < StrictVersion('1.9.0'):
+            self.assertEqual(instance._meta.fields[1].__class__.__name__, 'EChoiceField')
+        else:
+            self.assertEqual(instance._meta.fields[1].__class__.__name__, 'ETestFloatChoicesField')
         self.assertEqual(instance._meta.fields[1].choices, ETestFloatChoices.choices())
         self.assertIs(instance._meta.fields[1].default, ETestFloatChoices.FIELD1.value)
         self.assertIs(instance._meta.fields[1].get_default(), ETestFloatChoices.FIELD1)
@@ -322,7 +340,10 @@ class ChoiceBoolFieldTest(TestCase):
         self.assertIs(choice, ETestBoolChoices.FIELD1)
         self.assertTrue(choice.value)
         self.assertEqual(choice.label, 'Label 1')
-        self.assertEqual(instance._meta.fields[1].__class__.__name__, 'ETestBoolChoicesField')
+        if StrictVersion(django_version()) < StrictVersion('1.9.0'):
+            self.assertEqual(instance._meta.fields[1].__class__.__name__, 'EChoiceField')
+        else:
+            self.assertEqual(instance._meta.fields[1].__class__.__name__, 'ETestBoolChoicesField')
         self.assertEqual(instance._meta.fields[1].choices, ETestBoolChoices.choices())
         self.assertTrue(instance._meta.fields[1].default)
         self.assertIs(instance._meta.fields[1].get_default(), ETestBoolChoices.FIELD1)
@@ -356,7 +377,10 @@ class OrderedChoiceCharFieldTest(TestCase):
         self.assertIs(choice, ETestStrOrderedChoices.FIELD1)
         self.assertEqual(choice.value, 'value3')
         self.assertEqual(choice.label, 'Label 1')
-        self.assertEqual(instance._meta.fields[1].__class__.__name__, 'ETestStrOrderedChoicesField')
+        if StrictVersion(django_version()) < StrictVersion('1.9.0'):
+            self.assertEqual(instance._meta.fields[1].__class__.__name__, 'EChoiceField')
+        else:
+            self.assertEqual(instance._meta.fields[1].__class__.__name__, 'ETestStrOrderedChoicesField')
         self.assertEqual(instance._meta.fields[1].choices, ETestStrOrderedChoices.choices())
         self.assertIs(instance._meta.fields[1].default, ETestStrOrderedChoices.FIELD1.value)
         self.assertIs(instance._meta.fields[1].get_default(), ETestStrOrderedChoices.FIELD1)
