@@ -75,35 +75,6 @@ class TestBoolChoicesDefaultModel(models.Model):
     choice = models.BooleanField(choices=ETestBoolChoices.choices(), default=ETestBoolChoices.FIELD1.value)
 
 
-class TestEChoiceFieldEStrChoicesModel(models.Model):
-    choice = make_echoicefield(ETestStrChoices)
-
-
-class TestEChoiceFieldDefaultEStrChoicesModel(models.Model):
-    choice = make_echoicefield(ETestStrChoices, default=ETestStrChoices.FIELD1)
-
-
-class TestEChoiceFieldEIntChoicesModel(models.Model):
-    choice = make_echoicefield(ETestIntChoices, null=True)
-
-
-class TestEChoiceFieldDefaultEIntChoicesModel(models.Model):
-    choice = make_echoicefield(ETestIntChoices, default=ETestIntChoices.FIELD1)
-
-
-class TestEChoiceFieldEFloatChoicesModel(models.Model):
-    choice = make_echoicefield(ETestFloatChoices, null=True)
-
-
-class TestEChoiceFieldDefaultEFloatChoicesModel(models.Model):
-    choice = make_echoicefield(ETestFloatChoices, default=ETestFloatChoices.FIELD1)
-
-
-class TestEChoiceFieldDefaultEBoolChoicesModel(models.Model):
-    # NULL is not supported by BooleanField, but NullBooleanField does
-    choice = make_echoicefield(ETestBoolChoices, default=ETestBoolChoices.FIELD1)
-
-
 # ==========
 # EOrderedChoice
 
@@ -156,5 +127,41 @@ class ETestAutoChoices(EAutoChoice):
 
 class TestAutoChoicesModel(models.Model):
     choice = models.IntegerField(choices=ETestAutoChoices.choices(), default=ETestAutoChoices.FIELD1.value)
+
+
+# ==========
+# EChoiceField
+
+class TestEChoiceFieldEStrChoicesModel(models.Model):
+    choice = make_echoicefield(ETestStrChoices)
+
+
+class TestNamedEChoiceFieldEStrChoicesModel(models.Model):
+    choice = make_echoicefield(ETestStrChoices, klass_name='MyEnumFieldName')
+
+
+class TestEChoiceFieldDefaultEStrChoicesModel(models.Model):
+    choice = make_echoicefield(ETestStrChoices, default=ETestStrChoices.FIELD1)
+
+
+class TestEChoiceFieldEIntChoicesModel(models.Model):
+    choice = make_echoicefield(ETestIntChoices, null=True)
+
+
+class TestEChoiceFieldDefaultEIntChoicesModel(models.Model):
+    choice = make_echoicefield(ETestIntChoices, default=ETestIntChoices.FIELD1)
+
+
+class TestEChoiceFieldEFloatChoicesModel(models.Model):
+    choice = make_echoicefield(ETestFloatChoices, null=True)
+
+
+class TestEChoiceFieldDefaultEFloatChoicesModel(models.Model):
+    choice = make_echoicefield(ETestFloatChoices, default=ETestFloatChoices.FIELD1)
+
+
+class TestEChoiceFieldDefaultEBoolChoicesModel(models.Model):
+    # NULL is not supported by BooleanField, but NullBooleanField does
+    choice = make_echoicefield(ETestBoolChoices, default=ETestBoolChoices.FIELD1)
 
 # TODO: derive EChoice

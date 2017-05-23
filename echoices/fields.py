@@ -7,45 +7,6 @@ from django.utils.translation import ugettext_lazy as _
 from .enums import EChoice
 
 
-def make_echoicefield(echoices, *args, **kwargs):
-    """
-    Construct a derived `models.Field` specific to the type of the `EChoice` values.
-    
-    Parameters
-    ----------
-    echoices
-    args
-    kwargs
-
-    Returns
-    -------
-    EChoiceField
-        For Django>=1.9, the exact name of the returned Field is based on the name of the `echoices` with a suffixed
-        'Field'. For older Django, the returned name of the class is `EChoiceField`.
-
-    """
-    assert issubclass(echoices, EChoice)
-    value_type = echoices.__getvaluetype__()
-    if value_type is str:
-        cls_ = models.CharField
-    elif value_type is int:
-        cls_ = models.IntegerField
-    elif value_type is float:
-        cls_ = models.FloatField
-    elif value_type is bool:
-        cls_ = models.BooleanField
-    else:
-        raise NotImplementedError("Please open an issue if you wish your value type to be supported: "
-                                  "https://github.com/mbourqui/django-echoices/issues/new")
-    d = dict(cls_.__dict__)
-    d.update(dict(EChoiceField.__dict__))
-    if StrictVersion(django_version()) >= StrictVersion('1.9.0'):
-        cls_name = "{}Field".format(echoices.__name__)
-    else:
-        cls_name = EChoiceField.__name__
-    return type(cls_name, (cls_,), d)(echoices, *args, **kwargs)
-
-
 class EChoiceField(models.Field):
     """
     Specialized field for single choices. Not intended to be called directly but instantiated via
@@ -109,5 +70,49 @@ class EChoiceField(models.Field):
         if self.has_default():
             kwargs['default'] = self.get_default()
         return name, path, args, kwargs
+
+
+def make_echoicefield(echoices, *args, klass_name=None, **kwargs):
+    """
+    Construct a subclass of a derived `models.Field` specific to the type of the `EChoice` values.
+
+    Parameters
+    ----------
+    echoices : subclass of EChoice
+    args
+        Passed to the derived `models.Field`
+    klass_name : str
+        Give a specific name to the returned class.
+        By default for Django < 1.9, the name will be 'EChoiceField'.
+        By default for Django >= 1.9, the name will be the name of the enum appended with 'Field'.
+    kwargs
+        Passed to the derived `models.Field`
+
+    Returns
+    -------
+    EChoiceField
+        For Django>=1.9, the exact name of the returned Field is based on the name of the `echoices` with a suffixed
+        'Field'. For older Django, the returned name of the class is `EChoiceField`.
+
+    """
+    assert issubclass(echoices, EChoice)
+    value_type = echoices.__getvaluetype__()
+    if value_type is str:
+        cls_ = models.CharField
+    elif value_type is int:
+        cls_ = models.IntegerField
+    elif value_type is float:
+        cls_ = models.FloatField
+    elif value_type is bool:
+        cls_ = models.BooleanField
+    else:
+        raise NotImplementedError("Please open an issue if you wish your value type to be supported: "
+                                  "https://github.com/mbourqui/django-echoices/issues/new")
+    klass_name = klass_name if klass_name else \
+        "{}Field".format(echoices.__name__) if StrictVersion(django_version()) >= StrictVersion('1.9.0') else \
+            EChoiceField.__name__
+    d = dict(cls_.__dict__)
+    d.update(dict(EChoiceField.__dict__))
+    return type(klass_name, (cls_,), d)(echoices, *args, **kwargs)
 
 # TODO: MultipleEChoiceField
