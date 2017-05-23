@@ -166,7 +166,7 @@ from django.db import models
 from echoices.fields import make_echoicefield
 
 class MyModel(models.Model):
-    state = make_echoicefield(app.models.EStates)
+    state = make_echoicefield(EStates, default=EStates.CREATED)
 ```
 
 Then you would replace the generated field instantiation statement in `migrations/0001_initial.py`
@@ -174,13 +174,20 @@ Then you would replace the generated field instantiation statement in `migration
 migrations.CreateModel(
     name='MyModel',
     fields=[
-        ('state', echoices.fields.EStatesField(echoices=app.models.EStates)),  # <- replace this statement
+        # Replace the statement below
+        ('state', echoices.fields.EStatesField(
+                        echoices=app.models.EStates,
+                        default=app.models.EStates(1))
+        ),
     ],
 ```
 
 with
 ```
-        ('state', echoices.fields.make_echoicefield(echoices=app.models.EStates)),
+        ('state', echoices.fields.make_echoicefield(
+                        echoices=app.models.EStates,
+                        default=app.models.EStates.CREATED)
+        ),
 ```
 
 #### `fields.MultipleEChoiceField`
