@@ -112,10 +112,6 @@ class TestIntOrderedChoicesModel(models.Model):
     choice = models.IntegerField(choices=ETestIntOrderedChoices.choices(), default=ETestIntOrderedChoices.FIELD1.value)
 
 
-class TestEChoiceCharFieldEStrOrderedChoicesModel(models.Model):
-    choice = make_echoicefield(ETestStrOrderedChoices, default=ETestStrOrderedChoices.FIELD1)
-
-
 # ==========
 # EAutoChoice
 
@@ -163,5 +159,9 @@ class TestEChoiceFieldDefaultEFloatChoicesModel(models.Model):
 class TestEChoiceFieldDefaultEBoolChoicesModel(models.Model):
     # NULL is not supported by BooleanField, but NullBooleanField does
     choice = make_echoicefield(ETestBoolChoices, default=ETestBoolChoices.FIELD1)
+
+
+class TestEChoiceCharFieldEStrOrderedChoicesModel(models.Model):
+    choice = make_echoicefield(ETestStrOrderedChoices, default=ETestStrOrderedChoices.FIELD1)
 
 # TODO: derive EChoice

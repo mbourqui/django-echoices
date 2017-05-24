@@ -33,6 +33,9 @@ class EChoiceField(models.Field):
         kwargs['choices'] = self.echoices.choices()
         default = kwargs.get('default')
         if default:
+            if not isinstance(default, self.echoices):
+                raise AttributeError(
+                    "Illegal default value: {}. Must be an instance of {}".format(default, self.echoices))
             kwargs['default'] = default.value
         # Parameters specific to some fields
         if issubclass(self.__class__, models.CharField):
@@ -116,4 +119,6 @@ def make_echoicefield(echoices, *args, klass_name=None, **kwargs):
         klass_name if klass_name else "{}Field".format(echoices.__name__)
     d = dict(cls_.__dict__)
     d.update(dict(EChoiceField.__dict__))
-    return type(klass_name, (cls_,), d)(echoices, *args, **kwargs)  # TODO: MultipleEChoiceField
+    return type(klass_name, (cls_,), d)(echoices, *args, **kwargs)
+
+# TODO: MultipleEChoiceField

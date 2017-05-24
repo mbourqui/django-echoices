@@ -367,6 +367,18 @@ class ChoiceComplexFieldTest(TestCase):
         self.assertRaises(NotImplementedError, create)
 
 
+class ChoiceMixedDefaultFieldTest(TestCase):
+    def test_create_empty_instance(self):
+        def create():
+            from django.db import models
+
+            class TestEChoiceFieldMixedDefaultModel(models.Model):
+                from echoices.fields import make_echoicefield
+                choice = make_echoicefield(ETestCharChoices, default=ETestIntChoices.FIELD1)
+
+        self.assertRaises(AttributeError, create)
+
+
 class OrderedChoiceCharFieldTest(TestCase):
     def test_create_empty_instance(self):
         TestEChoiceCharFieldEStrOrderedChoicesModel.objects.create()
