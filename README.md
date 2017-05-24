@@ -17,7 +17,7 @@
 
 ## Requirements
 
-* Django >= 1.8.18
+* Django >= 1.9.13
 
 
 ## Installation
