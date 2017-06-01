@@ -13,6 +13,7 @@
 
 * Specialized [enum types](#enum)
 * Specialized [model fields](#modelfield)
+* Accessible in [templates](#templages)
 
 
 ## Requirements
@@ -99,6 +100,22 @@ class EMyChoices(EChoice):
         print(", ".join([e.my_arg for e in list(cls)]))
 ```
 
+### In templates
+Assume a `Context(dict(estates=myapp.models.EStates))` is provided to the following templates.
+
+* Fields of the `EChoice` can be accessed in the templates as:
+    ```
+    {{ estates.CREATED.value }}
+    {{ estates.CREATED.label }}
+    ```
+
+* `EChoice` can also be enumerated:
+    ```
+    {% for state in estates %}
+        {{ state.value }}
+        {{ state.label }}
+    {% endfor %}
+    ```
 
 ## Short documentation
 
@@ -193,3 +210,20 @@ with
 #### `fields.MultipleEChoiceField`
 Similar to previous fields, but supports multiple values to be selected.
 [**Not yet implemented**](#3).
+
+### <a name="templates"></a>Usage in templates
+Assume a `Context(dict(estates=myapp.models.EStates))` is provided to the following templates.
+
+* Fields of the `EChoice` can be accessed in the templates as:
+    ```
+    {{ estates.CREATED.value }}
+    {{ estates.CREATED.label }}
+    ```
+
+* `EChoice` can also be enumerated:
+    ```
+    {% for state in estates %}
+        {{ state.value }}
+        {{ state.label }}
+    {% endfor %}
+    ```
