@@ -53,6 +53,9 @@ class EChoice(Enum, metaclass=EChoiceMeta):
     def __new__(cls, value, label, *args, **kwargs):
         if len(cls) == 0:
             cls.__value_type_ = type(value)
+            # SEE: https://stackoverflow.com/a/35953630/
+            # SEE: https://docs.djangoproject.com/en/stable/ref/templates/api/#variables-and-lookups
+            cls.do_not_call_in_templates = True
         else:
             if type(value) is not cls.__value_type_:
                 raise TypeError("Incompatible type: {}. All values must be {}.".format(type(value), cls.__value_type_))
