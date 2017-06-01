@@ -403,13 +403,44 @@ class OrderedChoiceCharFieldTest(TestCase):
 class TemplateTest(TestCase):
     def test_simple(self):
         tpl = Template("""
+<div class="echoices">
+{{ echoices }}
+</div>
+<div class="echoices.FIELD1">
 {{ echoices.FIELD1 }}
+</div>
+<div class="echoices.FIELD1.value">
 {{ echoices.FIELD1.value }}
+</div>
+<div class="echoices.FIELD1.label">
 {{ echoices.FIELD1.label }}
+</div>
 """)
         ctx = Context(dict(echoices=ETestCharChoices))
         rendered = tpl.render(ctx)
         rendered = str(rendered.strip())
-        self.assertIn('ETestCharChoices.FIELD1', rendered)
+        self.assertIn(ETestCharChoices.FIELD1.name, rendered)
         self.assertIn(ETestCharChoices.FIELD1.value, rendered)
         self.assertIn(ETestCharChoices.FIELD1.label, rendered)
+
+    def test_iteration(self):
+        tpl = Template("""
+{% for e in echoices %}
+    <div class="e">
+    {{ e }}
+    </div>
+    <div class="e.value">
+    {{ e.value }}
+    </div>
+    <div class="e.label">
+    {{ e.label }}
+    </div>
+{% endfor %}
+""")
+        ctx = Context(dict(echoices=ETestCharChoices))
+        rendered = tpl.render(ctx)
+        rendered = str(rendered.strip())
+        for e in ETestCharChoices:
+            self.assertIn(e.name, rendered)
+            self.assertIn(e.value, rendered)
+            self.assertIn(e.label, rendered)
