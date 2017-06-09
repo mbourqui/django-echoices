@@ -30,6 +30,11 @@ setup(
     install_requires=[
         'Django>=1.9.13',
     ],
+    extras_require={
+        'docs': [
+            'recommonmark'
+        ]
+    },
     keywords='django choices models enum',
     classifiers=[
         'Development Status :: 5 - Production/Stable',
