@@ -253,6 +253,19 @@ class ChoiceCharFieldTest(TestCase):
         self.assertIs(instance._meta.fields[1].get_default(), ETestStrChoices.FIELD1)
         instance.delete()
 
+    def test_update(self):
+        instance = TestEChoiceFieldEStrChoicesModel.objects.create(choice=ETestStrChoices.FIELD1)
+        choice = instance.choice
+        self.assertIsInstance(choice, ETestStrChoices)
+        self.assertIs(choice, ETestStrChoices.FIELD1)
+        instance.choice = ETestStrChoices.FIELD2
+        instance.save()
+        instance = TestEChoiceFieldEStrChoicesModel.objects.get(pk=1)
+        choice = instance.choice
+        self.assertIsInstance(choice, ETestStrChoices)
+        self.assertIs(choice, ETestStrChoices.FIELD2)
+        instance.delete()
+
 
 class ChoiceIntFieldTest(TestCase):
     def test_create_empty_instance(self):
