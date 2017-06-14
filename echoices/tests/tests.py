@@ -4,6 +4,7 @@ import warnings
 from distutils.version import StrictVersion
 
 from django import get_version as django_version
+from django.contrib.auth.models import User
 from django.db import models
 from django.template import Context, Template
 from django.test import TestCase
@@ -457,3 +458,20 @@ class TemplateTest(TestCase):
             self.assertIn(e.name, rendered)
             self.assertIn(e.value, rendered)
             self.assertIn(e.label, rendered)
+
+
+class AdminTest(TestCase):
+    def setUp(self):
+        User.objects.create_superuser('admin', 'admin@tests.com', 'admin')
+        self.client.login(username='admin', password='admin')
+
+    def test_admin(self):
+        self.assertEqual(self.client.get('/admin/').status_code, 200)
+        self.assertEqual(self.client.get('/admin/tests/').status_code, 200)
+
+    def test_admin_testcharchoicesmodel(self):
+        TestCharChoicesModel.objects.create(choice=ETestCharChoices.FIELD1.value)
+        for param in ['', '?choice__exact=u']:
+            response = self.client.get('/admin/tests/testcharchoicesmodel/' + param)
+            self.assertEqual(response.status_code, 200)
+            self.assertInHTML('<p class="paginator">1 test char choices model</p>', response.rendered_content)
