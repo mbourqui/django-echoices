@@ -27,16 +27,17 @@ DATABASES = {
     },
 }
 
-MIDDLEWARE_CLASSES = [
+MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.common.CommonMiddleware',
 ]
+MIDDLEWARE_CLASSES = MIDDLEWARE  # Django < 1.10
 
 LANGUAGE_CODE = 'en'
 
-# ROOT_URLCONF = 'echoices.tests.urls'
+ROOT_URLCONF = 'echoices.tests.urls'
 
 # MEDIA CONFIGURATION
 # ------------------------------------------------------------------------------
