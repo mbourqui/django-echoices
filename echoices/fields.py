@@ -59,8 +59,9 @@ class EChoiceField(models.Field):
         return self.echoices[value]
 
     def get_prep_value(self, value):
-        if value:
+        if isinstance(value, self.echoices):
             return value.value
+        assert value in self.echoices.values() or value in ['', None]
         return value
 
     def deconstruct(self):
