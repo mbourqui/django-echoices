@@ -3,12 +3,14 @@
 import warnings
 from distutils.version import StrictVersion
 
+from django import forms
 from django import get_version as django_version
 from django.contrib.auth.models import User
 from django.db import models
 from django.template import Context, Template
 from django.test import TestCase
 
+from echoices.fields import make_echoicefield
 from echoices.tests.models import ETestAutoChoices
 from echoices.tests.models import ETestBoolChoices
 from echoices.tests.models import ETestCharChoices, ETestStrChoices
@@ -469,9 +471,26 @@ class AdminTest(TestCase):
         self.assertEqual(self.client.get('/admin/').status_code, 200)
         self.assertEqual(self.client.get('/admin/tests/').status_code, 200)
 
-    def test_admin_testcharchoicesmodel(self):
+    def test_admin_testcharchoicesmodel_list(self):
         TestCharChoicesModel.objects.create(choice=ETestCharChoices.FIELD1.value)
         for param in ['', '?choice__exact=u']:
             response = self.client.get('/admin/tests/testcharchoicesmodel/' + param)
             self.assertEqual(response.status_code, 200)
             self.assertInHTML('<p class="paginator">1 test char choices model</p>', response.rendered_content)
+
+    def test_admin_testcharchoicesmodel_change(self):
+        TestCharChoicesModel.objects.create(choice=ETestCharChoices.FIELD1.value)
+        response = self.client.get('/admin/tests/testcharchoicesmodel/1/change/', follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertInHTML('<option value="u" selected="selected">Label 1</option>', response.rendered_content)
+
+
+class FormTest(TestCase):
+    def test_simple_form(self):
+        # SEE: https://docs.djangoproject.com/en/stable/ref/forms/api/#using-forms-to-validate-data
+        class SimpleForm(forms.Form):
+            choice = make_echoicefield(ETestCharChoices).formfield()
+
+        data = dict(choice=ETestCharChoices.FIELD1.value)
+        f = SimpleForm(data)
+        self.assertTrue(f.is_valid())
