@@ -64,6 +64,12 @@ class EChoiceField(models.Field):
         assert value in self.echoices.values() or value in ['', None]
         return value
 
+    def formfield(self, **kwargs):
+        from django import forms
+        defaults = {'choices_form_class': forms.TypedChoiceField}
+        defaults.update(kwargs)
+        return super(self.__class__, self).formfield(**defaults)
+
     def deconstruct(self):
         name, path, args, kwargs = super(self.__class__, self).deconstruct()
         # Drop the parameters set by our field
