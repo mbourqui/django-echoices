@@ -491,6 +491,8 @@ class FormTest(TestCase):
         class SimpleForm(forms.Form):
             choice = make_echoicefield(ETestCharChoices).formfield()
 
-        data = dict(choice=ETestCharChoices.FIELD1.value)
-        f = SimpleForm(data)
+        f = SimpleForm(dict(choice=ETestCharChoices.FIELD1))
         self.assertTrue(f.is_valid())
+
+        f = SimpleForm(dict(choice=''))
+        self.assertFalse(f.is_valid())
