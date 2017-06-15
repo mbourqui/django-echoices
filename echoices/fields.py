@@ -6,6 +6,7 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
 from .enums import EChoice
+from .forms import TypedEChoiceField
 
 
 class EChoiceField(models.Field):
@@ -65,8 +66,7 @@ class EChoiceField(models.Field):
         return value
 
     def formfield(self, **kwargs):
-        from django import forms
-        defaults = {'choices_form_class': forms.TypedChoiceField}
+        defaults = {'choices_form_class': TypedEChoiceField}
         defaults.update(kwargs)
         return super(self.__class__, self).formfield(**defaults)
 
