@@ -484,16 +484,6 @@ class AdminTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertInHTML('<option value="u" selected="selected">Label 1</option>', response.rendered_content)
 
-    def test_admin_testechoicefieldestrchoicesmodel_list(self):
-        TestEChoiceFieldEStrChoicesModel.objects.create(choice=ETestStrChoices.FIELD1)
-        objs = TestEChoiceFieldEStrChoicesModel.objects.all()
-        print(objs)
-        for obj in objs:
-            print(obj)
-        for param in ['', ]:
-            response = self.client.get('/admin/tests/testechoicefieldestrchoicesmodel/' + param)
-            self.assertEqual(response.status_code, 200)
-
 
 class FormTest(TestCase):
     def test_form(self):
