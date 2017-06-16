@@ -72,6 +72,25 @@ class EChoice(Enum, metaclass=EChoiceMeta):
         """The label of the Enum member."""
         return self._label_
 
+    def __len__(self):
+        """
+        If `len(value)` is supported, returns that length. Otherwise, returns 1.
+
+        This is mainly a hack to pass the validations. Since the validation ensures that the value will fit in the DB
+        field, it applies (solely?) on textual values. So it does no harm to return a non-null constant for a numeric
+        `value`.
+
+        Returns
+        -------
+        int : `len(value)` if supported, else 1.
+
+        """
+        # FIXME: find a way to set it *only* to EChoice with values supporting len()
+        try:
+            return len(self.value)
+        except TypeError:
+            return 1
+
     @classmethod
     def values(cls):
         """
