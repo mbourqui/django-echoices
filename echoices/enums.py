@@ -72,6 +72,28 @@ class EChoice(Enum, metaclass=EChoiceMeta):
         """The label of the Enum member."""
         return self._label_
 
+    def __call__(self, attr='value'):
+        """
+        Hack to get the "selected" tag. Does actually nothing else than returning the attribute `attr`. If `attr` is
+        a callable, it will be called.
+        Gets called in `django.forms.boundfield#BoundField.initial`.
+
+        Parameters
+        ----------
+        attr : str
+            Certainly not needed as redundant, but since __call__ is implemented anyway let's add a selector for the
+            field to return.
+
+        Returns
+        -------
+        `attr`, or `attr()` if `attr` is a callable
+
+        """
+        attr = self.__getattribute__(attr)
+        if callable(attr):
+            return attr()
+        return attr
+
     def __len__(self):
         """
         If `len(value)` is supported, returns that length. Otherwise, returns 1.
