@@ -486,7 +486,7 @@ class AdminTest(TestCase):
 
 
 class FormTest(TestCase):
-    def test_simple_form(self):
+    def test_form(self):
         # SEE: https://docs.djangoproject.com/en/stable/ref/forms/api/#using-forms-to-validate-data
         class SimpleForm(forms.Form):
             choice = make_echoicefield(ETestCharChoices).formfield()
@@ -494,5 +494,30 @@ class FormTest(TestCase):
         f = SimpleForm(dict(choice=ETestCharChoices.FIELD1))
         self.assertTrue(f.is_valid())
 
+        f = SimpleForm(dict(choice=ETestCharChoices.FIELD1.value))
+        self.assertTrue(f.is_valid())
+
         f = SimpleForm(dict(choice=''))
         self.assertFalse(f.is_valid())
+
+    def test_modelform_testcharchoicesmodel(self):
+        from django.forms import ModelForm
+
+        class TestCharChoicesModelForm(ModelForm):
+            class Meta:
+                model = TestCharChoicesModel
+                fields = '__all__'
+
+        f = TestCharChoicesModelForm(dict(choice=ETestCharChoices.FIELD1.value))
+        self.assertTrue(f.save())
+
+    def test_modelform_testechoicefieldestrchoicesmodel(self):
+        from django.forms import ModelForm
+
+        class TestEChoiceFieldEStrChoicesModelForm(ModelForm):
+            class Meta:
+                model = TestEChoiceFieldEStrChoicesModel
+                fields = '__all__'
+
+        f = TestEChoiceFieldEStrChoicesModelForm(dict(choice=ETestStrChoices.FIELD1))
+        self.assertTrue(f.save())

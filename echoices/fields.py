@@ -70,6 +70,13 @@ class EChoiceField(models.Field):
         defaults.update(kwargs)
         return super(self.__class__, self).formfield(**defaults)
 
+    def validate(self, value, model_instance):
+        """
+        Validates value and throws ValidationError. Subclasses should override
+        this to provide validation logic.
+        """
+        return super(self.__class__, self).validate(value.value, model_instance)
+
     def deconstruct(self):
         name, path, args, kwargs = super(self.__class__, self).deconstruct()
         # Drop the parameters set by our field
