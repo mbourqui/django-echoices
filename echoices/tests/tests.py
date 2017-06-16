@@ -33,6 +33,12 @@ warnings.simplefilter("always")
 
 
 class EChoiceTest(TestCase):
+
+    def test_name(self):
+        self.assertEqual(ETestCharChoices.FIELD1.name, 'FIELD1')
+        self.assertEqual(ETestStrChoices.FIELD1.name, 'FIELD1')
+        self.assertEqual(ETestIntChoices.FIELD1.name, 'FIELD1')
+
     def test_label(self):
         self.assertEqual(ETestCharChoices.FIELD1.label, 'Label 1')
         self.assertEqual(ETestStrChoices.FIELD1.label, 'Label 1')
@@ -69,6 +75,15 @@ class EChoiceTest(TestCase):
         self.assertIs(ETestCharChoices.get('u'), ETestCharChoices.FIELD1)
         self.assertIsNone(ETestCharChoices.get('a'))
         self.assertTrue(ETestCharChoices.get('a', default=True))
+
+    def test_call(self):
+        self.assertIs(ETestCharChoices.FIELD1('name'), ETestCharChoices.FIELD1.name)
+        self.assertEqual(ETestCharChoices.FIELD1('name'), 'FIELD1')
+        self.assertIs(ETestCharChoices.FIELD1('value'), ETestCharChoices.FIELD1.value)
+        self.assertEqual(ETestCharChoices.FIELD1('value'), 'u')
+        self.assertIs(ETestCharChoices.FIELD1('label'), ETestCharChoices.FIELD1.label)
+        self.assertEqual(ETestCharChoices.FIELD1('label'), 'Label 1')
+        self.assertEqual(ETestCharChoices.FIELD1('__str__'), str(ETestCharChoices.FIELD1))
 
     def test_duplicate_value(self):
         def init_duplicated():
