@@ -17,7 +17,7 @@ setup(
     name='django-echoices',
     version=__version__,
     author='Marc Bourqui',
-    author_email='https://github.com/mbourqui',
+    author_email='pypi.kemar@bourqui.org',
     license='GNU GPLv3',
     description='Choices for Django model fields as enumeration',
     long_description=README,
