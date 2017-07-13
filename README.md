@@ -6,7 +6,9 @@
 [![Coverage Status](https://coveralls.io/repos/github/mbourqui/django-echoices/badge.svg?branch=master)](https://coveralls.io/github/mbourqui/django-echoices?branch=master)
 
 
-# Django-EChoices, choices for Django model fields as enumeration
+# Django-EChoices
+
+Choices for Django model fields as enumeration
 
 
 ## Features
