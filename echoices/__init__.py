@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-Django EChoices, choices for Django model fields as enumeration
+django-echoices, choices for Django model fields as enumeration
 Copyright (C) 2017  Marc Bourqui
 
 This program is free software: you can redistribute it and/or modify
@@ -22,8 +22,8 @@ from .enums import EChoice, EOrderedChoice, EAutoChoice
 from .fields import make_echoicefield
 from .forms import TypedEChoiceField
 
-__license__ = 'GNU GPLv3'
-__author__ = 'Marc Bourqui <https://github.com/mbourqui>'
+__license__ = 'GNU GPLv3 <https://www.gnu.org/licenses/gpl-3.0.html>'
+__author__ = 'Marc Bourqui <pypi.kemar@bourqui.org>'
 __version__ = '2.2.5'
 __version_info__ = tuple([int(num) if num.isdigit() else num for num in __version__.replace('-', '.', 1).split('.')])
 __status__ = 'Stable'
