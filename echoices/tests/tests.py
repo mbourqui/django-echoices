@@ -38,16 +38,36 @@ class EChoiceTest(TestCase):
         self.assertEqual(ETestCharChoices.FIELD1.name, 'FIELD1')
         self.assertEqual(ETestStrChoices.FIELD1.name, 'FIELD1')
         self.assertEqual(ETestIntChoices.FIELD1.name, 'FIELD1')
+        self.assertEqual(ETestFloatChoices.FIELD1.name, 'FIELD1')
+        self.assertEqual(ETestBoolChoices.FIELD1.name, 'FIELD1')
+
+    def test_value(self):
+        self.assertEqual(ETestCharChoices.FIELD1.value, 'u')
+        self.assertEqual(ETestStrChoices.FIELD1.value, 'value1')
+        self.assertEqual(ETestIntChoices.FIELD1.value, 10)
+        self.assertEqual(ETestFloatChoices.FIELD1.value, 1.0)
+        self.assertEqual(ETestBoolChoices.FIELD1.value, True)
 
     def test_label(self):
         self.assertEqual(ETestCharChoices.FIELD1.label, 'Label 1')
         self.assertEqual(ETestStrChoices.FIELD1.label, 'Label 1')
         self.assertEqual(ETestIntChoices.FIELD1.label, 'Label 1')
+        self.assertEqual(ETestFloatChoices.FIELD1.label, 'Label 1')
+        self.assertEqual(ETestBoolChoices.FIELD1.label, 'Label 1')
+
+    def test_choice(self):
+        self.assertEqual(ETestCharChoices.FIELD1.choice, ('u', 'Label 1'))
+        self.assertEqual(ETestStrChoices.FIELD1.choice, ('value1', 'Label 1'))
+        self.assertEqual(ETestIntChoices.FIELD1.choice, (10, 'Label 1'))
+        self.assertEqual(ETestFloatChoices.FIELD1.choice, (1.0, 'Label 1'))
+        self.assertEqual(ETestBoolChoices.FIELD1.choice, (True, 'Label 1'))
 
     def test_values(self):
         self.assertEqual(ETestCharChoices.values(), ('u', 'v'))
         self.assertEqual(ETestStrChoices.values(), ('value1', 'value2'))
         self.assertEqual(ETestIntChoices.values(), (10, 20))
+        self.assertEqual(ETestFloatChoices.values(), (1.0, 2.0))
+        self.assertEqual(ETestBoolChoices.values(), (True, False))
 
     def test_maxvaluelength(self):
         self.assertEqual(ETestCharChoices.max_value_length(), 1)
@@ -57,14 +77,20 @@ class EChoiceTest(TestCase):
         self.assertEqual(ETestCharChoices.choices(), (('u', 'Label 1'), ('v', 'Label 2')))
         self.assertEqual(ETestStrChoices.choices(), (('value1', 'Label 1'), ('value2', 'Label 2')))
         self.assertEqual(ETestIntChoices.choices(), ((10, 'Label 1'), (20, 'Label 2')))
+        self.assertEqual(ETestFloatChoices.choices(), ((1.0, 'Label 1'), (2.0, 'Label 2')))
+        self.assertEqual(ETestBoolChoices.choices(), ((True, 'Label 1'), (False, 'Label 2')))
 
     def test_fromvalue(self):
         self.assertIs(ETestCharChoices.from_value('u'), ETestCharChoices.FIELD1)
         self.assertIs(ETestStrChoices.from_value('value1'), ETestStrChoices.FIELD1)
         self.assertIs(ETestIntChoices.from_value(10), ETestIntChoices.FIELD1)
+        self.assertIs(ETestFloatChoices.from_value(1.0), ETestFloatChoices.FIELD1)
+        self.assertIs(ETestBoolChoices.from_value(True), ETestBoolChoices.FIELD1)
         self.assertRaises(KeyError, ETestCharChoices.from_value, 'a')
         self.assertRaises(KeyError, ETestStrChoices.from_value, 'foobar')
         self.assertRaises(KeyError, ETestIntChoices.from_value, -66)
+        self.assertRaises(KeyError, ETestFloatChoices.from_value, -6.6)
+        self.assertRaises(KeyError, ETestBoolChoices.from_value, None)
 
     def test_getitem(self):
         self.assertEqual(ETestCharChoices.__getitem__('u'), ETestCharChoices.FIELD1)
@@ -75,6 +101,18 @@ class EChoiceTest(TestCase):
         self.assertIs(ETestCharChoices.get('u'), ETestCharChoices.FIELD1)
         self.assertIsNone(ETestCharChoices.get('a'))
         self.assertTrue(ETestCharChoices.get('a', default=True))
+        self.assertIs(ETestStrChoices.get('value1'), ETestStrChoices.FIELD1)
+        self.assertIsNone(ETestStrChoices.get('abc'))
+        self.assertTrue(ETestStrChoices.get('abc', default=True))
+        self.assertIs(ETestIntChoices.get(10), ETestIntChoices.FIELD1)
+        self.assertIsNone(ETestIntChoices.get(11))
+        self.assertTrue(ETestIntChoices.get(11, default=True))
+        self.assertIs(ETestFloatChoices.get(1.0), ETestFloatChoices.FIELD1)
+        self.assertIsNone(ETestFloatChoices.get(1.1))
+        self.assertTrue(ETestFloatChoices.get(1.1, default=True))
+        self.assertIs(ETestBoolChoices.get(True), ETestBoolChoices.FIELD1)
+        self.assertIsNone(ETestBoolChoices.get(None))
+        self.assertFalse(ETestBoolChoices.get(None, default=False))
 
     def test_call(self):
         self.assertIs(ETestCharChoices.FIELD1('name'), ETestCharChoices.FIELD1.name)
