@@ -72,6 +72,10 @@ class EChoice(Enum, metaclass=EChoiceMeta):
         """The label of the Enum member."""
         return self._label_
 
+    @property
+    def choice(self):
+        return self.value, self.label
+
     def __call__(self, attr='value'):
         """
         Hack to get the "selected" tag. Does actually nothing else than returning the attribute `attr`. If `attr` is
@@ -154,7 +158,7 @@ class EChoice(Enum, metaclass=EChoiceMeta):
         """
         # "natural" order, aka as given when instantiating
         if not hasattr(cls, '__choices_'):
-            cls.__choices_ = tuple([(c.value, c.label) for c in list(cls)])
+            cls.__choices_ = tuple([c.choice for c in list(cls)])
         return cls.__choices_
 
     @classmethod
