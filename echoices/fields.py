@@ -57,7 +57,7 @@ class EChoiceField(models.Field):
     def to_python(self, value):
         if isinstance(value, self.echoices) or value is None:
             return value
-        return self.echoices[value]
+        return self.echoices[self.echoices.coerce(value)]
 
     def get_prep_value(self, value):
         if isinstance(value, self.echoices):

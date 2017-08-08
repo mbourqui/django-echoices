@@ -213,6 +213,23 @@ class EChoice(Enum, metaclass=EChoiceMeta):
     def __getvaluetype__(cls):
         return cls.__value_type_
 
+    @classmethod
+    def coerce(cls, other):
+        """
+        Return the `value` in the type of the value of this EChoice. Typically, `value` is a string. Intended use case
+        is to convert `other` coming from a HTML form, typically a select choice.
+
+        Parameters
+        ----------
+        other : str
+
+        Returns
+        -------
+        the `other` value in the type of the value of this EChoice.
+
+        """
+        return cls.__value_type_(other)
+
 
 class EOrderedChoice(EChoice):
     """Provide ordering of the elements"""
