@@ -6,6 +6,7 @@ from distutils.version import StrictVersion
 from django import forms
 from django import get_version as django_version
 from django.contrib.auth.models import User
+from django.core import exceptions
 from django.db import models
 from django.template import Context, Template
 from django.test import TestCase
@@ -33,7 +34,6 @@ warnings.simplefilter("always")
 
 
 class EChoiceTest(TestCase):
-
     def test_name(self):
         self.assertEqual(ETestCharChoices.FIELD1.name, 'FIELD1')
         self.assertEqual(ETestStrChoices.FIELD1.name, 'FIELD1')
@@ -326,7 +326,11 @@ class ChoiceCharFieldTest(TestCase):
 class ChoiceIntFieldTest(TestCase):
     def test_create_empty_instance(self):
         TestEChoiceFieldEIntChoicesModel.objects.create()
+        self.assertEqual(TestEChoiceFieldEIntChoicesModel.objects.count(), 1)
+        self.assertIsNotNone(TestEChoiceFieldEIntChoicesModel.objects.get(pk=1))
         TestEChoiceFieldDefaultEIntChoicesModel.objects.create()
+        self.assertEqual(TestEChoiceFieldDefaultEIntChoicesModel.objects.count(), 1)
+        self.assertIsNotNone(TestEChoiceFieldDefaultEIntChoicesModel.objects.get(pk=1))
 
     def test_create_instance(self):
         instance = TestEChoiceFieldEIntChoicesModel.objects.create(choice=ETestIntChoices.FIELD1)
@@ -342,6 +346,7 @@ class ChoiceIntFieldTest(TestCase):
         self.assertEqual(instance._meta.fields[1].choices, ETestIntChoices.choices())
         self.assertIs(instance._meta.fields[1].default, models.fields.NOT_PROVIDED)
         self.assertIsNone(instance._meta.fields[1].get_default())
+        self.assertRaises(exceptions.ValidationError, instance._meta.fields[1].to_python, 'foo')
         instance.delete()
 
     def test_create_instance_default(self):
