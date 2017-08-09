@@ -232,6 +232,7 @@ class EOrderedChoiceTest(TestCase):
         self.assertFalse(ETestIntOrderedChoices.FIELD2 == ETestIntOrderedChoices.FIELD3)
         self.assertFalse(ETestIntOrderedChoices.FIELD2 == 20)
         self.assertFalse(ETestIntOrderedChoices.FIELD2 == '20')
+        self.assertFalse(ETestIntOrderedChoices.FIELD2 == None)
         self.assertTrue(ETestStrOrderedChoices.FIELD3 < ETestStrOrderedChoices.FIELD1)
         self.assertTrue(ETestIntOrderedChoices.FIELD3 < ETestIntOrderedChoices.FIELD1)
         self.assertTrue(ETestIntOrderedChoices.FIELD3 < 30)
