@@ -2,6 +2,7 @@ import warnings
 from distutils.version import StrictVersion
 
 from django import get_version as django_version
+from django.core import exceptions
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
@@ -57,7 +58,14 @@ class EChoiceField(models.Field):
     def to_python(self, value):
         if isinstance(value, self.echoices) or value is None:
             return value
-        return self.echoices[self.echoices.coerce(value)]
+        try:
+            return self.echoices[self.echoices.coerce(value)]
+        except (TypeError, ValueError):
+            raise exceptions.ValidationError(
+                self.error_messages['invalid'],
+                code='invalid',
+                params={'value': value},
+            )
 
     def get_prep_value(self, value):
         if isinstance(value, self.echoices):
