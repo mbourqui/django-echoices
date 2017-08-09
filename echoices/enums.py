@@ -248,7 +248,10 @@ class EOrderedChoice(EChoice):
     def __eq__(self, other):
         if self.__class__ is other.__class__:
             return self.value == other.value
-        return self.value == self.coerce(other)
+        try:
+            return self.value == self.coerce(other)
+        except TypeError:
+            return False
 
     def __ge__(self, other):
         return self == other or self > other
