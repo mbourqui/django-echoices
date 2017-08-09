@@ -213,10 +213,35 @@ class EOrderedChoiceTest(TestCase):
         self.assertIsNone(ETestCharOrderedChoices.get('a'))
         self.assertTrue(ETestCharOrderedChoices.get('a', default=True))
 
-    def test_ordering(self):
-        self.assertTrue(ETestCharOrderedChoices.FIELD1 > ETestCharOrderedChoices.FIELD2)
+    def test_orderable(self):
         self.assertTrue(ETestStrOrderedChoices.FIELD1 > ETestStrOrderedChoices.FIELD2)
         self.assertTrue(ETestIntOrderedChoices.FIELD1 > ETestIntOrderedChoices.FIELD2)
+        self.assertTrue(ETestIntOrderedChoices.FIELD1 > 10)
+        self.assertTrue(ETestIntOrderedChoices.FIELD1 > '10')
+        self.assertFalse(ETestIntOrderedChoices.FIELD2 > ETestIntOrderedChoices.FIELD1)
+        self.assertFalse(ETestIntOrderedChoices.FIELD2 > 30)
+        self.assertFalse(ETestIntOrderedChoices.FIELD2 > '30')
+        self.assertTrue(ETestStrOrderedChoices.FIELD2 == ETestStrOrderedChoices.FIELD2)
+        self.assertTrue(ETestIntOrderedChoices.FIELD2 == ETestIntOrderedChoices.FIELD2)
+        self.assertTrue(ETestIntOrderedChoices.FIELD2 == 10)
+        self.assertTrue(ETestIntOrderedChoices.FIELD2 == '10')
+        self.assertFalse(ETestIntOrderedChoices.FIELD2 == ETestIntOrderedChoices.FIELD3)
+        self.assertFalse(ETestIntOrderedChoices.FIELD2 == 20)
+        self.assertFalse(ETestIntOrderedChoices.FIELD2 == '20')
+        self.assertTrue(ETestStrOrderedChoices.FIELD3 < ETestStrOrderedChoices.FIELD1)
+        self.assertTrue(ETestIntOrderedChoices.FIELD3 < ETestIntOrderedChoices.FIELD1)
+        self.assertTrue(ETestIntOrderedChoices.FIELD3 < 30)
+        self.assertTrue(ETestIntOrderedChoices.FIELD3 < '30')
+        self.assertFalse(ETestIntOrderedChoices.FIELD1 < ETestIntOrderedChoices.FIELD3)
+        self.assertFalse(ETestIntOrderedChoices.FIELD1 < 20)
+        self.assertFalse(ETestIntOrderedChoices.FIELD1 < '20')
+        self.assertTrue(ETestIntOrderedChoices.FIELD3 <= ETestIntOrderedChoices.FIELD3)
+        self.assertTrue(ETestIntOrderedChoices.FIELD3 <= 20)
+        self.assertTrue(ETestIntOrderedChoices.FIELD3 <= '20')
+        self.assertTrue(ETestIntOrderedChoices.FIELD3 <= ETestIntOrderedChoices.FIELD3)
+        self.assertTrue(ETestIntOrderedChoices.FIELD3 >= 20)
+        self.assertTrue(ETestIntOrderedChoices.FIELD3 >= '20')
+
 
     def test_create_empty_instances(self):
         TestCharOrderedChoicesModel.objects.create()

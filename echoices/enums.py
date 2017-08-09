@@ -234,15 +234,32 @@ class EChoice(Enum, metaclass=EChoiceMeta):
 class EOrderedChoice(EChoice):
     """Provide ordering of the elements"""
 
-    def __gt__(self, other):
-        if self.__class__ is other.__class__:
-            return self.value > other.value
-        return NotImplemented
-
     def __lt__(self, other):
         if self.__class__ is other.__class__:
             return self.value < other.value
-        return NotImplemented
+        try:
+            return self.value < other
+        except TypeError:
+            return self.value < self.coerce(other)
+
+    def __le__(self, other):
+        return self < other or self == other
+
+    def __eq__(self, other):
+        if self.__class__ is other.__class__:
+            return self.value == other.value
+        return self.value == self.coerce(other)
+
+    def __ge__(self, other):
+        return self == other or self > other
+
+    def __gt__(self, other):
+        if self.__class__ is other.__class__:
+            return self.value > other.value
+        try:
+            return self.value > other
+        except TypeError:
+            return self.value > self.coerce(other)
 
     @classmethod
     def choices(cls, order='natural'):
@@ -264,7 +281,8 @@ class EOrderedChoice(EChoice):
 
         """
         INC, DEC, NAT = 'sorted', 'reverse', 'natural'
-        assert order in [INC, DEC, NAT], "Sorting order not recognized: {}".format(order)
+        options = [INC, DEC, NAT]
+        assert order in options, "Sorting order not recognized: {}. Available options are: {}".format(order, options)
         if order in [INC, DEC]:
             reverse = order == DEC
             if reverse:
