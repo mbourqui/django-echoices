@@ -114,6 +114,10 @@ class EChoiceTest(TestCase):
         self.assertIsNone(ETestBoolChoices.get(None))
         self.assertFalse(ETestBoolChoices.get(None, default=False))
 
+    def test_coerce(self):
+        self.assertEquals(ETestIntChoices.coerce('1'), 1)
+        # TODO: expand
+
     def test_call(self):
         self.assertIs(ETestCharChoices.FIELD1('name'), ETestCharChoices.FIELD1.name)
         self.assertEqual(ETestCharChoices.FIELD1('name'), 'FIELD1')
