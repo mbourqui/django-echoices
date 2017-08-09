@@ -250,7 +250,7 @@ class EOrderedChoice(EChoice):
             return self.value == other.value
         try:
             return self.value == self.coerce(other)
-        except TypeError:
+        except (TypeError, ValueError):
             return False
 
     def __ge__(self, other):

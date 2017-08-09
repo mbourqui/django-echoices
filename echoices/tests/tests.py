@@ -116,7 +116,8 @@ class EChoiceTest(TestCase):
 
     def test_coerce(self):
         self.assertEquals(ETestIntChoices.coerce('1'), 1)
-        # TODO: expand
+        self.assertRaises(TypeError, ETestIntChoices.coerce, None)
+        self.assertRaises(ValueError, ETestIntChoices.coerce, '')
 
     def test_call(self):
         self.assertIs(ETestCharChoices.FIELD1('name'), ETestCharChoices.FIELD1.name)
@@ -233,6 +234,7 @@ class EOrderedChoiceTest(TestCase):
         self.assertFalse(ETestIntOrderedChoices.FIELD2 == 20)
         self.assertFalse(ETestIntOrderedChoices.FIELD2 == '20')
         self.assertFalse(ETestIntOrderedChoices.FIELD2 == None)
+        self.assertFalse(ETestIntOrderedChoices.FIELD2 == '')
         self.assertTrue(ETestStrOrderedChoices.FIELD3 < ETestStrOrderedChoices.FIELD1)
         self.assertTrue(ETestIntOrderedChoices.FIELD3 < ETestIntOrderedChoices.FIELD1)
         self.assertTrue(ETestIntOrderedChoices.FIELD3 < 30)
