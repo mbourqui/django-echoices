@@ -24,6 +24,6 @@ from .forms import TypedEChoiceField
 
 __license__ = 'GNU GPLv3 <https://www.gnu.org/licenses/gpl-3.0.html>'
 __author__ = 'Marc Bourqui <pypi.kemar@bourqui.org>'
-__version__ = '2.4.2'
+__version__ = '2.4.3'
 __version_info__ = tuple([int(num) if num.isdigit() else num for num in __version__.replace('-', '.', 1).split('.')])
 __status__ = 'Stable'
