@@ -29,6 +29,8 @@ from echoices.tests.models import TestEChoiceFieldEIntChoicesModel, TestEChoiceF
 from echoices.tests.models import TestEChoiceFieldEStrChoicesModel, TestEChoiceFieldDefaultEStrChoicesModel
 from echoices.tests.models import TestFloatChoicesModel, TestFloatChoicesDefaultModel
 from echoices.tests.models import TestNamedEChoiceFieldEStrChoicesModel
+from ..tests.models import TestEChoiceCharFieldEStrOrderedChoicesSortedModel, \
+    TestEChoiceCharFieldEStrOrderedChoicesReverseModel
 
 warnings.simplefilter("always")
 
@@ -115,7 +117,7 @@ class EChoiceTest(TestCase):
         self.assertFalse(ETestBoolChoices.get(None, default=False))
 
     def test_coerce(self):
-        self.assertEquals(ETestIntChoices.coerce('1'), 1)
+        self.assertEqual(ETestIntChoices.coerce('1'), 1)
         self.assertRaises(TypeError, ETestIntChoices.coerce, None)
         self.assertRaises(ValueError, ETestIntChoices.coerce, '')
 
@@ -535,6 +537,20 @@ class OrderedChoiceCharFieldTest(TestCase):
         self.assertEqual(instance._meta.fields[1].choices, ETestStrOrderedChoices.choices())
         self.assertIs(instance._meta.fields[1].default, ETestStrOrderedChoices.FIELD1.value)
         self.assertIs(instance._meta.fields[1].get_default(), ETestStrOrderedChoices.FIELD1)
+        instance.delete()
+
+    def test_order(self):
+        # Sorted
+        instance = TestEChoiceCharFieldEStrOrderedChoicesSortedModel.objects.create(
+            choice=ETestStrOrderedChoices.FIELD1)
+        field = instance._meta.fields[1]
+        self.assertEqual(field.choices, ETestStrOrderedChoices.choices('sorted'))
+        instance.delete()
+        # Reverse
+        instance = TestEChoiceCharFieldEStrOrderedChoicesReverseModel.objects.create(
+            choice=ETestStrOrderedChoices.FIELD1)
+        field = instance._meta.fields[1]
+        self.assertEqual(field.choices, ETestStrOrderedChoices.choices('reverse'))
         instance.delete()
 
 
