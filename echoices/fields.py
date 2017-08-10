@@ -79,6 +79,12 @@ class EChoiceField(models.Field):
                 code='invalid',
                 params={'value': value},
             )
+        except KeyError:
+            raise exceptions.ValidationError(
+                self.error_messages['invalid_choice'],
+                code='invalid_choice',
+                params={'value': value},
+            ) from None
 
     def get_prep_value(self, value):
         if isinstance(value, self.echoices):

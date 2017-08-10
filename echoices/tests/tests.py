@@ -320,7 +320,8 @@ class ChoiceCharFieldTest(TestCase):
         self.assertEqual(instance._meta.fields[1].get_default(), '')
         # to_python()
         self.assertIsNone(instance._meta.fields[1].to_python(None))
-        # TODO: assert KeyError raises a ValidationError
+        self.assertRaisesMessage(exceptions.ValidationError, '["Value \'foo\' is not a valid choice."]',
+                                 instance._meta.fields[1].to_python, 'foo')
         # Custom flatchoices
         self.assertEqual(instance._meta.fields[1].flatchoices,
                          [(ETestStrChoices.FIELD1, 'Label 1'), (ETestStrChoices.FIELD2, 'Label 2')])
@@ -397,7 +398,8 @@ class ChoiceIntFieldTest(TestCase):
         self.assertIs(instance._meta.fields[1].default, models.fields.NOT_PROVIDED)
         self.assertIsNone(instance._meta.fields[1].get_default())
         # to_python()
-        self.assertRaises(exceptions.ValidationError, instance._meta.fields[1].to_python, 'foo')
+        self.assertRaisesMessage(exceptions.ValidationError, '["\'foo\' value must be an integer."]',
+                                 instance._meta.fields[1].to_python, 'foo')
         # Custom flatchoices
         self.assertEqual(instance._meta.fields[1].flatchoices,
                          [(ETestIntChoices.FIELD1, 'Label 1'), (ETestIntChoices.FIELD2, 'Label 2')])
@@ -441,7 +443,8 @@ class ChoiceFloatFieldTest(TestCase):
         self.assertIs(instance._meta.fields[1].default, models.fields.NOT_PROVIDED)
         self.assertIs(instance._meta.fields[1].get_default(), None)
         # to_python()
-        self.assertRaises(exceptions.ValidationError, instance._meta.fields[1].to_python, 'foo')
+        self.assertRaisesMessage(exceptions.ValidationError, '["\'foo\' value must be a float."]',
+                                 instance._meta.fields[1].to_python, 'foo')
         # Custom flatchoices
         self.assertEqual(instance._meta.fields[1].flatchoices,
                          [(ETestFloatChoices.FIELD1, 'Label 1'), (ETestFloatChoices.FIELD2, 'Label 2')])
