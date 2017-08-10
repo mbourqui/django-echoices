@@ -29,6 +29,8 @@ from echoices.tests.models import TestEChoiceFieldEIntChoicesModel, TestEChoiceF
 from echoices.tests.models import TestEChoiceFieldEStrChoicesModel, TestEChoiceFieldDefaultEStrChoicesModel
 from echoices.tests.models import TestFloatChoicesModel, TestFloatChoicesDefaultModel
 from echoices.tests.models import TestNamedEChoiceFieldEStrChoicesModel
+from ..tests.models import TestEChoiceCharFieldEStrOrderedChoicesSortedModel, \
+    TestEChoiceCharFieldEStrOrderedChoicesReverseModel
 
 warnings.simplefilter("always")
 
@@ -115,7 +117,7 @@ class EChoiceTest(TestCase):
         self.assertFalse(ETestBoolChoices.get(None, default=False))
 
     def test_coerce(self):
-        self.assertEquals(ETestIntChoices.coerce('1'), 1)
+        self.assertEqual(ETestIntChoices.coerce('1'), 1)
         self.assertRaises(TypeError, ETestIntChoices.coerce, None)
         self.assertRaises(ValueError, ETestIntChoices.coerce, '')
 
@@ -313,8 +315,15 @@ class ChoiceCharFieldTest(TestCase):
         else:
             self.assertEqual(instance._meta.fields[1].__class__.__name__, 'ETestStrChoicesField')
         self.assertEqual(instance._meta.fields[1].choices, ETestStrChoices.choices())
+        # Default value
         self.assertIs(instance._meta.fields[1].default, models.fields.NOT_PROVIDED)
         self.assertEqual(instance._meta.fields[1].get_default(), '')
+        # to_python()
+        self.assertIsNone(instance._meta.fields[1].to_python(None))
+        # TODO: assert KeyError raises a ValidationError
+        # Custom flatchoices
+        self.assertEqual(instance._meta.fields[1].flatchoices,
+                         [(ETestStrChoices.FIELD1, 'Label 1'), (ETestStrChoices.FIELD2, 'Label 2')])
         instance.delete()
 
     def test_create_instance_named(self):
@@ -384,9 +393,14 @@ class ChoiceIntFieldTest(TestCase):
         else:
             self.assertEqual(instance._meta.fields[1].__class__.__name__, 'ETestIntChoicesField')
         self.assertEqual(instance._meta.fields[1].choices, ETestIntChoices.choices())
+        # Default value
         self.assertIs(instance._meta.fields[1].default, models.fields.NOT_PROVIDED)
         self.assertIsNone(instance._meta.fields[1].get_default())
+        # to_python()
         self.assertRaises(exceptions.ValidationError, instance._meta.fields[1].to_python, 'foo')
+        # Custom flatchoices
+        self.assertEqual(instance._meta.fields[1].flatchoices,
+                         [(ETestIntChoices.FIELD1, 'Label 1'), (ETestIntChoices.FIELD2, 'Label 2')])
         instance.delete()
 
     def test_create_instance_default(self):
@@ -423,8 +437,14 @@ class ChoiceFloatFieldTest(TestCase):
         else:
             self.assertEqual(instance._meta.fields[1].__class__.__name__, 'ETestFloatChoicesField')
         self.assertEqual(instance._meta.fields[1].choices, ETestFloatChoices.choices())
+        # Default value
         self.assertIs(instance._meta.fields[1].default, models.fields.NOT_PROVIDED)
         self.assertIs(instance._meta.fields[1].get_default(), None)
+        # to_python()
+        self.assertRaises(exceptions.ValidationError, instance._meta.fields[1].to_python, 'foo')
+        # Custom flatchoices
+        self.assertEqual(instance._meta.fields[1].flatchoices,
+                         [(ETestFloatChoices.FIELD1, 'Label 1'), (ETestFloatChoices.FIELD2, 'Label 2')])
         instance.delete()
 
     def test_create_instance_default(self):
@@ -460,8 +480,14 @@ class ChoiceBoolFieldTest(TestCase):
         else:
             self.assertEqual(instance._meta.fields[1].__class__.__name__, 'ETestBoolChoicesField')
         self.assertEqual(instance._meta.fields[1].choices, ETestBoolChoices.choices())
+        # Default value
         self.assertTrue(instance._meta.fields[1].default)
         self.assertIs(instance._meta.fields[1].get_default(), ETestBoolChoices.FIELD1)
+        # to_python()
+        self.assertTrue(instance._meta.fields[1].to_python('foo'))
+        # Custom flatchoices
+        self.assertEqual(instance._meta.fields[1].flatchoices,
+                         [(ETestBoolChoices.FIELD1, 'Label 1'), (ETestBoolChoices.FIELD2, 'Label 2')])
         instance.delete()
 
 
@@ -511,6 +537,20 @@ class OrderedChoiceCharFieldTest(TestCase):
         self.assertEqual(instance._meta.fields[1].choices, ETestStrOrderedChoices.choices())
         self.assertIs(instance._meta.fields[1].default, ETestStrOrderedChoices.FIELD1.value)
         self.assertIs(instance._meta.fields[1].get_default(), ETestStrOrderedChoices.FIELD1)
+        instance.delete()
+
+    def test_order(self):
+        # Sorted
+        instance = TestEChoiceCharFieldEStrOrderedChoicesSortedModel.objects.create(
+            choice=ETestStrOrderedChoices.FIELD1)
+        field = instance._meta.fields[1]
+        self.assertEqual(field.choices, ETestStrOrderedChoices.choices('sorted'))
+        instance.delete()
+        # Reverse
+        instance = TestEChoiceCharFieldEStrOrderedChoicesReverseModel.objects.create(
+            choice=ETestStrOrderedChoices.FIELD1)
+        field = instance._meta.fields[1]
+        self.assertEqual(field.choices, ETestStrOrderedChoices.choices('reverse'))
         instance.delete()
 
 

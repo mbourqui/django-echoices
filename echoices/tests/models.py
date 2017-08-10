@@ -164,4 +164,12 @@ class TestEChoiceFieldDefaultEBoolChoicesModel(models.Model):
 class TestEChoiceCharFieldEStrOrderedChoicesModel(models.Model):
     choice = make_echoicefield(ETestStrOrderedChoices, default=ETestStrOrderedChoices.FIELD1)
 
+
+class TestEChoiceCharFieldEStrOrderedChoicesSortedModel(models.Model):
+    choice = make_echoicefield(ETestStrOrderedChoices, default=ETestStrOrderedChoices.FIELD1, order='sorted')
+
+
+class TestEChoiceCharFieldEStrOrderedChoicesReverseModel(models.Model):
+    choice = make_echoicefield(ETestStrOrderedChoices, default=ETestStrOrderedChoices.FIELD1, order='reverse')
+
 # TODO: derive EChoice
