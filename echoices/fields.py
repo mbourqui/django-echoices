@@ -14,10 +14,10 @@ class EChoiceField(models.Field):
     """
     Specialized field for single choices. Not intended to be called directly but instantiated via
     `make_echoicefield()`.
-    
+
     Internally uses a derived `models.Field`.
     In the case of a `models.CharField`, 'max_length' is deduced directly from the `echoices`.
-    
+
     Parameters
     ----------
     echoices : sublcass of EChoice
@@ -26,13 +26,14 @@ class EChoiceField(models.Field):
         Are passed to the derived models.Field
     * kwargs
         Are passed to the derived models.Field
-    
+
     """
     description = _("A derived Field supporting enumerated choices")
 
-    def __init__(self, echoices, *args, **kwargs):
+    def __init__(self, echoices, *args, order=None, **kwargs):
         self.echoices = echoices
-        kwargs['choices'] = self.echoices.choices()
+        self.order = order
+        kwargs['choices'] = self._get_sorted_choices()
         default = kwargs.get('default')
         if default:
             if not isinstance(default, self.echoices):
@@ -43,6 +44,18 @@ class EChoiceField(models.Field):
         if issubclass(self.__class__, models.CharField):
             kwargs['max_length'] = echoices.max_value_length()
         super(self.__class__, self).__init__(*args, **kwargs)
+
+    def _get_sorted_choices(self):
+        if self.order:
+            return self.echoices.choices(self.order)
+        return self.echoices.choices()
+
+    @property
+    def flatchoices(self):
+        flat = []
+        for value, label in self._get_sorted_choices():
+            flat.append((self.echoices.get(value), label))
+        return flat
 
     def get_default(self):
         default = super(self.__class__, self).get_default()
