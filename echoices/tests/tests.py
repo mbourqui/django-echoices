@@ -128,6 +128,15 @@ class EChoiceTest(TestCase):
         self.assertEqual(ETestCharChoices.FIELD1('label'), 'Label 1')
         self.assertEqual(ETestCharChoices.FIELD1('__str__'), str(ETestCharChoices.FIELD1))
 
+    def test_hashable(self):
+        self.assertEqual(hash(ETestStrChoices.FIELD1), hash(ETestStrChoices.FIELD1))
+        self.assertEqual(hash(ETestIntChoices.FIELD1), hash(ETestIntChoices.FIELD1))
+        self.assertEqual(hash(ETestFloatChoices.FIELD1), hash(ETestFloatChoices.FIELD1))
+        self.assertEqual(hash(ETestBoolChoices.FIELD1), hash(ETestBoolChoices.FIELD1))
+        self.assertEqual(hash(ETestCharOrderedChoices.FIELD1), hash(ETestCharOrderedChoices.FIELD1))
+        self.assertEqual(hash(ETestIntOrderedChoices.FIELD1), hash(ETestIntOrderedChoices.FIELD1))
+        self.assertEqual(hash(ETestAutoChoices.FIELD1), hash(ETestAutoChoices.FIELD1))
+
     def test_duplicate_value(self):
         def init_duplicated():
             from echoices.enums import EChoice
@@ -248,7 +257,6 @@ class EOrderedChoiceTest(TestCase):
         self.assertTrue(ETestIntOrderedChoices.FIELD3 <= ETestIntOrderedChoices.FIELD3)
         self.assertTrue(ETestIntOrderedChoices.FIELD3 >= 20)
         self.assertTrue(ETestIntOrderedChoices.FIELD3 >= '20')
-
 
     def test_create_empty_instances(self):
         TestCharOrderedChoicesModel.objects.create()

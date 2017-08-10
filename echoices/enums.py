@@ -264,6 +264,10 @@ class EOrderedChoice(EChoice):
         except TypeError:
             return self.value > self.coerce(other)
 
+    def __hash__(self):
+        # Somewhat required since comparison operators are defined
+        return super(EOrderedChoice, self).__hash__()
+
     @classmethod
     def choices(cls, order='natural'):
         """
