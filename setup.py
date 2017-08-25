@@ -7,6 +7,8 @@ from setuptools import find_packages, setup
 
 from echoices import __version__
 
+REPO_URL = "https://github.com/mbourqui/django-echoices/"
+
 with open(os.path.join(os.path.dirname(__file__), 'README.rst')) as readme:
     README = readme.read()
 
@@ -21,7 +23,8 @@ setup(
     license='GNU GPLv3',
     description='Choices for Django model fields as enumeration',
     long_description=README,
-    url='https://github.com/mbourqui/django-echoices',
+    url=REPO_URL,
+    download_url=REPO_URL + 'releases/tag/v' + __version__,
     packages=find_packages(),
     include_package_data=True,
     package_data={
