@@ -20,7 +20,8 @@ Choices for Django model fields as enumeration
 
 ## Requirements
 
-* Django >= 1.9.13
+* [Python][] >= 3.4
+* [Django][] >= 1.9.13
 
 
 ## Installation
@@ -235,3 +236,6 @@ Assume a `Context(dict(estates=myapp.models.EStates))` is provided to the follow
         {{ state.label }}
     {% endfor %}
     ```
+
+  [django]:     https://www.djangoproject.com/      "Django"
+  [python]:     https://www.python.org/             "Python"
