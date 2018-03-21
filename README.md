@@ -56,7 +56,14 @@ using CharField, thus only works for textual labels.
 
 ## Installation
 
-1. Run `pip install django-echoices`
+### Using [PyPI](https://pypi.python.org/pypi/django-echoices)
+1. Run `pip install django-echoices`.
+
+### Using the source code
+1. Make sure [`pandoc`](http://pandoc.org/index.html) is installed
+1. Run `./pypi_packager.sh`
+1. Run `pip install dist/django_echoices-x.y.z-[...].wheel`, where `x.y.z` must be replaced by the actual
+   version number and `[...]` depends on your packaging configuration
 
 
 ## Usage
