@@ -1,71 +1,50 @@
 import os
+from distutils.version import StrictVersion
 
+import django
 BASE_DIR = os.path.dirname(os.path.realpath(__file__))
 
-DEBUG = True
-
-AUTHNET_LOGIN_ID = ''
-AUTHNET_TRANSACTION_KEY = ''
+DEBUG = False
 
 SECRET_KEY = 'm+qa*7_8t-=17zt_)9gi)4g%6w*v$xxkh6rwrys*bn9su+5%du'
 
 INSTALLED_APPS = [
     'django.contrib.admin',
-    'django.contrib.admindocs',
     'django.contrib.auth',
     'django.contrib.contenttypes',
-    'django.contrib.messages',
     'django.contrib.sessions',
-    'django.contrib.sites',
-    'django.contrib.staticfiles',
+
     'echoices.tests',
 ]
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3'
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     },
 }
 
-MIDDLEWARE_CLASSES = [
+MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.common.CommonMiddleware',
 ]
 
+if StrictVersion(django.get_version()) < StrictVersion('1.10.0'):
+    MIDDLEWARE_CLASSES = MIDDLEWARE
+
+TIME_ZONE = 'Europe/Zurich'
+
 LANGUAGE_CODE = 'en'
-
-# ROOT_URLCONF = 'echoices.tests.urls'
-
-# MEDIA CONFIGURATION
-# ------------------------------------------------------------------------------
-# See: https://docs.djangoproject.com/en/stable/ref/settings/#media-root
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-
-# See: https://docs.djangoproject.com/en/stable/ref/settings/#media-url
-MEDIA_URL = '/media/'
-
-# STATIC FILE CONFIGURATION
-# ------------------------------------------------------------------------------
-# See: https://docs.djangoproject.com/en/dev/ref/settings/#static-root
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-
-# See: https://docs.djangoproject.com/en/dev/ref/settings/#static-url
-STATIC_URL = '/static/'
-
-# See: https://docs.djangoproject.com/en/dev/ref/contrib/staticfiles/#staticfiles-finders
-STATICFILES_FINDERS = [
-    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-]
-
-LOGIN_URL = '/accounts/login/'
-
-MANAGERS = []
 
 SITE_ID = 1
 
 USE_I18N = True
+
+USE_TZ = True
+
+ROOT_URLCONF = 'echoices.tests.urls'
 
 # TEMPLATE_DIRS = [os.path.join(os.path.dirname(__file__), 'templates')]
 TEMPLATES = [

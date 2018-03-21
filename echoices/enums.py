@@ -51,9 +51,17 @@ class EChoice(Enum, metaclass=EChoiceMeta):
     """
 
     def __new__(cls, value, label, *args, **kwargs):
-        if value in [c.value for c in list(cls)]:
-            raise AttributeError(
-                "Duplicate value: '{}'. Only unique values are supported in {}.".format(value, EChoice))
+        if len(cls) == 0:
+            cls.__value_type_ = type(value)
+            # SEE: https://stackoverflow.com/a/35953630/
+            # SEE: https://docs.djangoproject.com/en/stable/ref/templates/api/#variables-and-lookups
+            cls.do_not_call_in_templates = True
+        else:
+            if type(value) is not cls.__value_type_:
+                raise TypeError("Incompatible type: {}. All values must be {}.".format(type(value), cls.__value_type_))
+            if value in [c.value for c in list(cls)]:
+                raise AttributeError(
+                    "Duplicate value: '{}'. Only unique values are supported in {}.".format(value, EChoice))
         obj = object.__new__(cls)
         obj._value_ = value  # Overrides default _value_
         obj._label_ = label
@@ -63,6 +71,51 @@ class EChoice(Enum, metaclass=EChoiceMeta):
     def label(self):
         """The label of the Enum member."""
         return self._label_
+
+    @property
+    def choice(self):
+        return self.value, self.label
+
+    def __call__(self, attr='value'):
+        """
+        Hack to get the "selected" tag. Does actually nothing else than returning the attribute `attr`. If `attr` is
+        a callable, it will be called.
+        Gets called in `django.forms.boundfield#BoundField.initial`.
+
+        Parameters
+        ----------
+        attr : str
+            Certainly not needed as redundant, but since __call__ is implemented anyway let's add a selector for the
+            field to return.
+
+        Returns
+        -------
+        `attr`, or `attr()` if `attr` is a callable
+
+        """
+        attr = self.__getattribute__(attr)
+        if callable(attr):
+            return attr()
+        return attr
+
+    def __len__(self):
+        """
+        If `len(value)` is supported, returns that length. Otherwise, returns 1.
+
+        This is mainly a hack to pass the validations. Since the validation ensures that the value will fit in the DB
+        field, it applies (solely?) on textual values. So it does no harm to return a non-null constant for a numeric
+        `value`.
+
+        Returns
+        -------
+        int : `len(value)` if supported, else 1.
+
+        """
+        # FIXME: find a way to set it *only* to EChoice with values supporting len()
+        try:
+            return len(self.value)
+        except TypeError:
+            return 1
 
     @classmethod
     def values(cls):
@@ -105,7 +158,7 @@ class EChoice(Enum, metaclass=EChoiceMeta):
         """
         # "natural" order, aka as given when instantiating
         if not hasattr(cls, '__choices_'):
-            cls.__choices_ = tuple([(c.value, c.label) for c in list(cls)])
+            cls.__choices_ = tuple([c.choice for c in list(cls)])
         return cls.__choices_
 
     @classmethod
@@ -156,19 +209,64 @@ class EChoice(Enum, metaclass=EChoiceMeta):
         except KeyError:
             return default
 
+    @classmethod
+    def __getvaluetype__(cls):
+        return cls.__value_type_
+
+    @classmethod
+    def coerce(cls, other):
+        """
+        Return the `value` in the type of the value of this EChoice. Typically, `value` is a string. Intended use case
+        is to convert `other` coming from a HTML form, typically a select choice.
+
+        Parameters
+        ----------
+        other : str
+
+        Returns
+        -------
+        the `other` value in the type of the value of this EChoice.
+
+        """
+        return cls.__value_type_(other)
+
 
 class EOrderedChoice(EChoice):
     """Provide ordering of the elements"""
 
-    def __gt__(self, other):
-        if self.__class__ is other.__class__:
-            return self.value > other.value
-        return NotImplemented
-
     def __lt__(self, other):
         if self.__class__ is other.__class__:
             return self.value < other.value
-        return NotImplemented
+        try:
+            return self.value < other
+        except TypeError:
+            return self.value < self.coerce(other)
+
+    def __le__(self, other):
+        return self < other or self == other
+
+    def __eq__(self, other):
+        if self.__class__ is other.__class__:
+            return self.value == other.value
+        try:
+            return self.value == self.coerce(other)
+        except (TypeError, ValueError):
+            return False
+
+    def __ge__(self, other):
+        return self == other or self > other
+
+    def __gt__(self, other):
+        if self.__class__ is other.__class__:
+            return self.value > other.value
+        try:
+            return self.value > other
+        except TypeError:
+            return self.value > self.coerce(other)
+
+    def __hash__(self):
+        # Somewhat required since comparison operators are defined
+        return super(EOrderedChoice, self).__hash__()
 
     @classmethod
     def choices(cls, order='natural'):
@@ -190,7 +288,8 @@ class EOrderedChoice(EChoice):
 
         """
         INC, DEC, NAT = 'sorted', 'reverse', 'natural'
-        assert order in [INC, DEC, NAT], "Sorting order not recognized: {}".format(order)
+        options = [INC, DEC, NAT]
+        assert order in options, "Sorting order not recognized: {}. Available options are: {}".format(order, options)
         if order in [INC, DEC]:
             reverse = order == DEC
             if reverse:

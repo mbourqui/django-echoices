@@ -1,31 +1,75 @@
 # -*- coding: utf-8 -*-
 
 import warnings
+from distutils.version import StrictVersion
 
+from django import forms
+from django import get_version as django_version
+from django.contrib.auth.models import User
+from django.core import exceptions
+from django.db import models
+from django.template import Context, Template
 from django.test import TestCase
 
+from echoices.fields import make_echoicefield
 from echoices.tests.models import ETestAutoChoices
-from echoices.tests.models import ETestCharChoices, ETestStrChoices, ETestIntChoices
+from echoices.tests.models import ETestBoolChoices
+from echoices.tests.models import ETestCharChoices, ETestStrChoices
 from echoices.tests.models import ETestCharOrderedChoices, ETestStrOrderedChoices, ETestIntOrderedChoices
+from echoices.tests.models import ETestIntChoices, ETestFloatChoices
 from echoices.tests.models import TestAutoChoicesModel
+from echoices.tests.models import TestBoolChoicesDefaultModel
+from echoices.tests.models import TestCharChoicesDefaultModel, TestStrChoicesDefaultModel, TestIntChoicesDefaultModel
 from echoices.tests.models import TestCharChoicesModel, TestStrChoicesModel, TestIntChoicesModel
 from echoices.tests.models import TestCharOrderedChoicesModel, TestStrOrderedChoicesModel, TestIntOrderedChoicesModel
-from echoices.tests.models import TestEChoiceCharFieldEStrChoicesModel
 from echoices.tests.models import TestEChoiceCharFieldEStrOrderedChoicesModel
+from echoices.tests.models import TestEChoiceFieldDefaultEBoolChoicesModel
+from echoices.tests.models import TestEChoiceFieldEFloatChoicesModel, TestEChoiceFieldDefaultEFloatChoicesModel
+from echoices.tests.models import TestEChoiceFieldEIntChoicesModel, TestEChoiceFieldDefaultEIntChoicesModel
+from echoices.tests.models import TestEChoiceFieldEStrChoicesModel, TestEChoiceFieldDefaultEStrChoicesModel
+from echoices.tests.models import TestFloatChoicesModel, TestFloatChoicesDefaultModel
+from echoices.tests.models import TestNamedEChoiceFieldEStrChoicesModel
+from ..tests.models import TestEChoiceCharFieldEStrOrderedChoicesSortedModel, \
+    TestEChoiceCharFieldEStrOrderedChoicesReverseModel
 
 warnings.simplefilter("always")
 
 
 class EChoiceTest(TestCase):
+    def test_name(self):
+        self.assertEqual(ETestCharChoices.FIELD1.name, 'FIELD1')
+        self.assertEqual(ETestStrChoices.FIELD1.name, 'FIELD1')
+        self.assertEqual(ETestIntChoices.FIELD1.name, 'FIELD1')
+        self.assertEqual(ETestFloatChoices.FIELD1.name, 'FIELD1')
+        self.assertEqual(ETestBoolChoices.FIELD1.name, 'FIELD1')
+
+    def test_value(self):
+        self.assertEqual(ETestCharChoices.FIELD1.value, 'u')
+        self.assertEqual(ETestStrChoices.FIELD1.value, 'value1')
+        self.assertEqual(ETestIntChoices.FIELD1.value, 10)
+        self.assertEqual(ETestFloatChoices.FIELD1.value, 1.0)
+        self.assertEqual(ETestBoolChoices.FIELD1.value, True)
+
     def test_label(self):
         self.assertEqual(ETestCharChoices.FIELD1.label, 'Label 1')
         self.assertEqual(ETestStrChoices.FIELD1.label, 'Label 1')
         self.assertEqual(ETestIntChoices.FIELD1.label, 'Label 1')
+        self.assertEqual(ETestFloatChoices.FIELD1.label, 'Label 1')
+        self.assertEqual(ETestBoolChoices.FIELD1.label, 'Label 1')
+
+    def test_choice(self):
+        self.assertEqual(ETestCharChoices.FIELD1.choice, ('u', 'Label 1'))
+        self.assertEqual(ETestStrChoices.FIELD1.choice, ('value1', 'Label 1'))
+        self.assertEqual(ETestIntChoices.FIELD1.choice, (10, 'Label 1'))
+        self.assertEqual(ETestFloatChoices.FIELD1.choice, (1.0, 'Label 1'))
+        self.assertEqual(ETestBoolChoices.FIELD1.choice, (True, 'Label 1'))
 
     def test_values(self):
         self.assertEqual(ETestCharChoices.values(), ('u', 'v'))
         self.assertEqual(ETestStrChoices.values(), ('value1', 'value2'))
         self.assertEqual(ETestIntChoices.values(), (10, 20))
+        self.assertEqual(ETestFloatChoices.values(), (1.0, 2.0))
+        self.assertEqual(ETestBoolChoices.values(), (True, False))
 
     def test_maxvaluelength(self):
         self.assertEqual(ETestCharChoices.max_value_length(), 1)
@@ -35,14 +79,20 @@ class EChoiceTest(TestCase):
         self.assertEqual(ETestCharChoices.choices(), (('u', 'Label 1'), ('v', 'Label 2')))
         self.assertEqual(ETestStrChoices.choices(), (('value1', 'Label 1'), ('value2', 'Label 2')))
         self.assertEqual(ETestIntChoices.choices(), ((10, 'Label 1'), (20, 'Label 2')))
+        self.assertEqual(ETestFloatChoices.choices(), ((1.0, 'Label 1'), (2.0, 'Label 2')))
+        self.assertEqual(ETestBoolChoices.choices(), ((True, 'Label 1'), (False, 'Label 2')))
 
     def test_fromvalue(self):
         self.assertIs(ETestCharChoices.from_value('u'), ETestCharChoices.FIELD1)
         self.assertIs(ETestStrChoices.from_value('value1'), ETestStrChoices.FIELD1)
         self.assertIs(ETestIntChoices.from_value(10), ETestIntChoices.FIELD1)
+        self.assertIs(ETestFloatChoices.from_value(1.0), ETestFloatChoices.FIELD1)
+        self.assertIs(ETestBoolChoices.from_value(True), ETestBoolChoices.FIELD1)
         self.assertRaises(KeyError, ETestCharChoices.from_value, 'a')
         self.assertRaises(KeyError, ETestStrChoices.from_value, 'foobar')
         self.assertRaises(KeyError, ETestIntChoices.from_value, -66)
+        self.assertRaises(KeyError, ETestFloatChoices.from_value, -6.6)
+        self.assertRaises(KeyError, ETestBoolChoices.from_value, None)
 
     def test_getitem(self):
         self.assertEqual(ETestCharChoices.__getitem__('u'), ETestCharChoices.FIELD1)
@@ -53,6 +103,41 @@ class EChoiceTest(TestCase):
         self.assertIs(ETestCharChoices.get('u'), ETestCharChoices.FIELD1)
         self.assertIsNone(ETestCharChoices.get('a'))
         self.assertTrue(ETestCharChoices.get('a', default=True))
+        self.assertIs(ETestStrChoices.get('value1'), ETestStrChoices.FIELD1)
+        self.assertIsNone(ETestStrChoices.get('abc'))
+        self.assertTrue(ETestStrChoices.get('abc', default=True))
+        self.assertIs(ETestIntChoices.get(10), ETestIntChoices.FIELD1)
+        self.assertIsNone(ETestIntChoices.get(11))
+        self.assertTrue(ETestIntChoices.get(11, default=True))
+        self.assertIs(ETestFloatChoices.get(1.0), ETestFloatChoices.FIELD1)
+        self.assertIsNone(ETestFloatChoices.get(1.1))
+        self.assertTrue(ETestFloatChoices.get(1.1, default=True))
+        self.assertIs(ETestBoolChoices.get(True), ETestBoolChoices.FIELD1)
+        self.assertIsNone(ETestBoolChoices.get(None))
+        self.assertFalse(ETestBoolChoices.get(None, default=False))
+
+    def test_coerce(self):
+        self.assertEqual(ETestIntChoices.coerce('1'), 1)
+        self.assertRaises(TypeError, ETestIntChoices.coerce, None)
+        self.assertRaises(ValueError, ETestIntChoices.coerce, '')
+
+    def test_call(self):
+        self.assertIs(ETestCharChoices.FIELD1('name'), ETestCharChoices.FIELD1.name)
+        self.assertEqual(ETestCharChoices.FIELD1('name'), 'FIELD1')
+        self.assertIs(ETestCharChoices.FIELD1('value'), ETestCharChoices.FIELD1.value)
+        self.assertEqual(ETestCharChoices.FIELD1('value'), 'u')
+        self.assertIs(ETestCharChoices.FIELD1('label'), ETestCharChoices.FIELD1.label)
+        self.assertEqual(ETestCharChoices.FIELD1('label'), 'Label 1')
+        self.assertEqual(ETestCharChoices.FIELD1('__str__'), str(ETestCharChoices.FIELD1))
+
+    def test_hashable(self):
+        self.assertEqual(hash(ETestStrChoices.FIELD1), hash(ETestStrChoices.FIELD1))
+        self.assertEqual(hash(ETestIntChoices.FIELD1), hash(ETestIntChoices.FIELD1))
+        self.assertEqual(hash(ETestFloatChoices.FIELD1), hash(ETestFloatChoices.FIELD1))
+        self.assertEqual(hash(ETestBoolChoices.FIELD1), hash(ETestBoolChoices.FIELD1))
+        self.assertEqual(hash(ETestCharOrderedChoices.FIELD1), hash(ETestCharOrderedChoices.FIELD1))
+        self.assertEqual(hash(ETestIntOrderedChoices.FIELD1), hash(ETestIntOrderedChoices.FIELD1))
+        self.assertEqual(hash(ETestAutoChoices.FIELD1), hash(ETestAutoChoices.FIELD1))
 
     def test_duplicate_value(self):
         def init_duplicated():
@@ -64,10 +149,27 @@ class EChoiceTest(TestCase):
 
         self.assertRaises(AttributeError, init_duplicated)
 
+    def test_mixed_values(self):
+        def init_mixed():
+            from echoices.enums import EChoice
+
+            class EMixedChoices(EChoice):
+                FIELD1 = ('u', 'Label 1')
+                FIELD2 = (2, 'Label 2')
+
+        self.assertRaises(TypeError, init_mixed)
+
     def test_create_empty_instances(self):
         TestCharChoicesModel.objects.create()
+        TestCharChoicesDefaultModel.objects.create()
         TestStrChoicesModel.objects.create()
+        TestStrChoicesDefaultModel.objects.create()
         TestIntChoicesModel.objects.create()
+        TestIntChoicesDefaultModel.objects.create()
+        TestFloatChoicesModel.objects.create()
+        TestFloatChoicesDefaultModel.objects.create()
+        # NULL is not supported by BooleanField, but NullBooleanField does
+        TestBoolChoicesDefaultModel.objects.create()
 
 
 class EOrderedChoiceTest(TestCase):
@@ -127,10 +229,36 @@ class EOrderedChoiceTest(TestCase):
         self.assertIsNone(ETestCharOrderedChoices.get('a'))
         self.assertTrue(ETestCharOrderedChoices.get('a', default=True))
 
-    def test_ordering(self):
-        self.assertTrue(ETestCharOrderedChoices.FIELD1 > ETestCharOrderedChoices.FIELD2)
+    def test_orderable(self):
         self.assertTrue(ETestStrOrderedChoices.FIELD1 > ETestStrOrderedChoices.FIELD2)
         self.assertTrue(ETestIntOrderedChoices.FIELD1 > ETestIntOrderedChoices.FIELD2)
+        self.assertTrue(ETestIntOrderedChoices.FIELD1 > 10)
+        self.assertTrue(ETestIntOrderedChoices.FIELD1 > '10')
+        self.assertFalse(ETestIntOrderedChoices.FIELD2 > ETestIntOrderedChoices.FIELD1)
+        self.assertFalse(ETestIntOrderedChoices.FIELD2 > 30)
+        self.assertFalse(ETestIntOrderedChoices.FIELD2 > '30')
+        self.assertTrue(ETestStrOrderedChoices.FIELD2 == ETestStrOrderedChoices.FIELD2)
+        self.assertTrue(ETestIntOrderedChoices.FIELD2 == ETestIntOrderedChoices.FIELD2)
+        self.assertTrue(ETestIntOrderedChoices.FIELD2 == 10)
+        self.assertTrue(ETestIntOrderedChoices.FIELD2 == '10')
+        self.assertFalse(ETestIntOrderedChoices.FIELD2 == ETestIntOrderedChoices.FIELD3)
+        self.assertFalse(ETestIntOrderedChoices.FIELD2 == 20)
+        self.assertFalse(ETestIntOrderedChoices.FIELD2 == '20')
+        self.assertFalse(ETestIntOrderedChoices.FIELD2 == None)
+        self.assertFalse(ETestIntOrderedChoices.FIELD2 == '')
+        self.assertTrue(ETestStrOrderedChoices.FIELD3 < ETestStrOrderedChoices.FIELD1)
+        self.assertTrue(ETestIntOrderedChoices.FIELD3 < ETestIntOrderedChoices.FIELD1)
+        self.assertTrue(ETestIntOrderedChoices.FIELD3 < 30)
+        self.assertTrue(ETestIntOrderedChoices.FIELD3 < '30')
+        self.assertFalse(ETestIntOrderedChoices.FIELD1 < ETestIntOrderedChoices.FIELD3)
+        self.assertFalse(ETestIntOrderedChoices.FIELD1 < 20)
+        self.assertFalse(ETestIntOrderedChoices.FIELD1 < '20')
+        self.assertTrue(ETestIntOrderedChoices.FIELD3 <= ETestIntOrderedChoices.FIELD3)
+        self.assertTrue(ETestIntOrderedChoices.FIELD3 <= 20)
+        self.assertTrue(ETestIntOrderedChoices.FIELD3 <= '20')
+        self.assertTrue(ETestIntOrderedChoices.FIELD3 <= ETestIntOrderedChoices.FIELD3)
+        self.assertTrue(ETestIntOrderedChoices.FIELD3 >= 20)
+        self.assertTrue(ETestIntOrderedChoices.FIELD3 >= '20')
 
     def test_create_empty_instances(self):
         TestCharOrderedChoicesModel.objects.create()
@@ -146,7 +274,7 @@ class EAutoChoiceTest(TestCase):
         self.assertEqual(ETestAutoChoices.values(), (1, 2, 3))
 
     def test_fromvalue(self):
-        self.assertIs(ETestAutoChoices.from_value(2), ETestAutoChoices.FIELD2)
+        self.assertIs(ETestAutoChoices[2], ETestAutoChoices.FIELD2)
 
     def test_get(self):
         self.assertIs(ETestAutoChoices.get(2), ETestAutoChoices.FIELD2)
@@ -171,18 +299,228 @@ class EAutoChoiceTest(TestCase):
 
 class ChoiceCharFieldTest(TestCase):
     def test_create_empty_instance(self):
-        TestEChoiceCharFieldEStrChoicesModel.objects.create()
+        TestEChoiceFieldEStrChoicesModel.objects.create()
+        TestNamedEChoiceFieldEStrChoicesModel.objects.create()
+        TestEChoiceFieldDefaultEStrChoicesModel.objects.create()
 
     def test_create_instance(self):
-        instance = TestEChoiceCharFieldEStrChoicesModel.objects.create(choice=ETestStrChoices.FIELD1)
+        instance = TestEChoiceFieldEStrChoicesModel.objects.create(choice=ETestStrChoices.FIELD1)
         choice = instance.choice
+        self.assertIsInstance(choice, ETestStrChoices)
         self.assertIs(choice, ETestStrChoices.FIELD1)
         self.assertEqual(choice.value, 'value1')
         self.assertEqual(choice.label, 'Label 1')
+        if StrictVersion(django_version()) < StrictVersion('1.9.0'):
+            self.assertEqual(instance._meta.fields[1].__class__.__name__, 'EChoiceField')
+        else:
+            self.assertEqual(instance._meta.fields[1].__class__.__name__, 'ETestStrChoicesField')
+        self.assertEqual(instance._meta.fields[1].choices, ETestStrChoices.choices())
+        # Default value
+        self.assertIs(instance._meta.fields[1].default, models.fields.NOT_PROVIDED)
+        self.assertEqual(instance._meta.fields[1].get_default(), '')
+        # to_python()
+        self.assertIsNone(instance._meta.fields[1].to_python(None))
+        self.assertRaisesMessage(exceptions.ValidationError, '["Value \'foo\' is not a valid choice."]',
+                                 instance._meta.fields[1].to_python, 'foo')
+        # Custom flatchoices
+        self.assertEqual(instance._meta.fields[1].flatchoices,
+                         [(ETestStrChoices.FIELD1, 'Label 1'), (ETestStrChoices.FIELD2, 'Label 2')])
+        instance.delete()
+
+    def test_create_instance_named(self):
+        instance = TestNamedEChoiceFieldEStrChoicesModel.objects.create(choice=ETestStrChoices.FIELD1)
+        choice = instance.choice
+        self.assertIsInstance(choice, ETestStrChoices)
+        self.assertIs(choice, ETestStrChoices.FIELD1)
+        self.assertEqual(choice.value, 'value1')
+        self.assertEqual(choice.label, 'Label 1')
+        if StrictVersion(django_version()) < StrictVersion('1.9.0'):
+            self.assertEqual(instance._meta.fields[1].__class__.__name__, 'EChoiceField')
+        else:
+            self.assertEqual(instance._meta.fields[1].__class__.__name__, 'MyEnumFieldName')
+        self.assertEqual(instance._meta.fields[1].choices, ETestStrChoices.choices())
+        self.assertIs(instance._meta.fields[1].default, models.fields.NOT_PROVIDED)
+        self.assertEqual(instance._meta.fields[1].get_default(), '')
+        instance.delete()
+
+    def test_create_instance_default(self):
+        instance = TestEChoiceFieldDefaultEStrChoicesModel.objects.create(choice=ETestStrChoices.FIELD1)
+        choice = instance.choice
+        self.assertIsInstance(choice, ETestStrChoices)
+        self.assertIs(choice, ETestStrChoices.FIELD1)
+        self.assertEqual(choice.value, 'value1')
+        self.assertEqual(choice.label, 'Label 1')
+        if StrictVersion(django_version()) < StrictVersion('1.9.0'):
+            self.assertEqual(instance._meta.fields[1].__class__.__name__, 'EChoiceField')
+        else:
+            self.assertEqual(instance._meta.fields[1].__class__.__name__, 'ETestStrChoicesField')
         self.assertEqual(instance._meta.fields[1].choices, ETestStrChoices.choices())
         self.assertIs(instance._meta.fields[1].default, ETestStrChoices.FIELD1.value)
         self.assertIs(instance._meta.fields[1].get_default(), ETestStrChoices.FIELD1)
         instance.delete()
+
+    def test_update(self):
+        instance = TestEChoiceFieldEStrChoicesModel.objects.create(choice=ETestStrChoices.FIELD1)
+        choice = instance.choice
+        self.assertIsInstance(choice, ETestStrChoices)
+        self.assertIs(choice, ETestStrChoices.FIELD1)
+        instance.choice = ETestStrChoices.FIELD2
+        instance.save()
+        instance = TestEChoiceFieldEStrChoicesModel.objects.get(pk=1)
+        choice = instance.choice
+        self.assertIsInstance(choice, ETestStrChoices)
+        self.assertIs(choice, ETestStrChoices.FIELD2)
+        instance.delete()
+
+
+class ChoiceIntFieldTest(TestCase):
+    def test_create_empty_instance(self):
+        TestEChoiceFieldEIntChoicesModel.objects.create()
+        self.assertEqual(TestEChoiceFieldEIntChoicesModel.objects.count(), 1)
+        self.assertIsNotNone(TestEChoiceFieldEIntChoicesModel.objects.get(pk=1))
+        TestEChoiceFieldDefaultEIntChoicesModel.objects.create()
+        self.assertEqual(TestEChoiceFieldDefaultEIntChoicesModel.objects.count(), 1)
+        self.assertIsNotNone(TestEChoiceFieldDefaultEIntChoicesModel.objects.get(pk=1))
+
+    def test_create_instance(self):
+        instance = TestEChoiceFieldEIntChoicesModel.objects.create(choice=ETestIntChoices.FIELD1)
+        choice = instance.choice
+        self.assertIsInstance(choice, ETestIntChoices)
+        self.assertIs(choice, ETestIntChoices.FIELD1)
+        self.assertEqual(choice.value, 10)
+        self.assertEqual(choice.label, 'Label 1')
+        if StrictVersion(django_version()) < StrictVersion('1.9.0'):
+            self.assertEqual(instance._meta.fields[1].__class__.__name__, 'EChoiceField')
+        else:
+            self.assertEqual(instance._meta.fields[1].__class__.__name__, 'ETestIntChoicesField')
+        self.assertEqual(instance._meta.fields[1].choices, ETestIntChoices.choices())
+        # Default value
+        self.assertIs(instance._meta.fields[1].default, models.fields.NOT_PROVIDED)
+        self.assertIsNone(instance._meta.fields[1].get_default())
+        # to_python()
+        self.assertRaisesMessage(exceptions.ValidationError, '["\'foo\' value must be an integer."]',
+                                 instance._meta.fields[1].to_python, 'foo')
+        # Custom flatchoices
+        self.assertEqual(instance._meta.fields[1].flatchoices,
+                         [(ETestIntChoices.FIELD1, 'Label 1'), (ETestIntChoices.FIELD2, 'Label 2')])
+        instance.delete()
+
+    def test_create_instance_default(self):
+        instance = TestEChoiceFieldDefaultEIntChoicesModel.objects.create(choice=ETestIntChoices.FIELD1)
+        choice = instance.choice
+        self.assertIsInstance(choice, ETestIntChoices)
+        self.assertIs(choice, ETestIntChoices.FIELD1)
+        self.assertEqual(choice.value, 10)
+        self.assertEqual(choice.label, 'Label 1')
+        if StrictVersion(django_version()) < StrictVersion('1.9.0'):
+            self.assertEqual(instance._meta.fields[1].__class__.__name__, 'EChoiceField')
+        else:
+            self.assertEqual(instance._meta.fields[1].__class__.__name__, 'ETestIntChoicesField')
+        self.assertEqual(instance._meta.fields[1].choices, ETestIntChoices.choices())
+        self.assertIs(instance._meta.fields[1].default, ETestIntChoices.FIELD1.value)
+        self.assertIs(instance._meta.fields[1].get_default(), ETestIntChoices.FIELD1)
+        instance.delete()
+
+
+class ChoiceFloatFieldTest(TestCase):
+    def test_create_empty_instance(self):
+        TestEChoiceFieldEFloatChoicesModel.objects.create()
+        TestEChoiceFieldDefaultEFloatChoicesModel.objects.create()
+
+    def test_create_instance(self):
+        instance = TestEChoiceFieldEFloatChoicesModel.objects.create(choice=ETestFloatChoices.FIELD1)
+        choice = instance.choice
+        self.assertIsInstance(choice, ETestFloatChoices)
+        self.assertIs(choice, ETestFloatChoices.FIELD1)
+        self.assertEqual(choice.value, 1.0)
+        self.assertEqual(choice.label, 'Label 1')
+        if StrictVersion(django_version()) < StrictVersion('1.9.0'):
+            self.assertEqual(instance._meta.fields[1].__class__.__name__, 'EChoiceField')
+        else:
+            self.assertEqual(instance._meta.fields[1].__class__.__name__, 'ETestFloatChoicesField')
+        self.assertEqual(instance._meta.fields[1].choices, ETestFloatChoices.choices())
+        # Default value
+        self.assertIs(instance._meta.fields[1].default, models.fields.NOT_PROVIDED)
+        self.assertIs(instance._meta.fields[1].get_default(), None)
+        # to_python()
+        self.assertRaisesMessage(exceptions.ValidationError, '["\'foo\' value must be a float."]',
+                                 instance._meta.fields[1].to_python, 'foo')
+        # Custom flatchoices
+        self.assertEqual(instance._meta.fields[1].flatchoices,
+                         [(ETestFloatChoices.FIELD1, 'Label 1'), (ETestFloatChoices.FIELD2, 'Label 2')])
+        instance.delete()
+
+    def test_create_instance_default(self):
+        instance = TestEChoiceFieldDefaultEFloatChoicesModel.objects.create(choice=ETestFloatChoices.FIELD1)
+        choice = instance.choice
+        self.assertIsInstance(choice, ETestFloatChoices)
+        self.assertIs(choice, ETestFloatChoices.FIELD1)
+        self.assertEqual(choice.value, 1.0)
+        self.assertEqual(choice.label, 'Label 1')
+        if StrictVersion(django_version()) < StrictVersion('1.9.0'):
+            self.assertEqual(instance._meta.fields[1].__class__.__name__, 'EChoiceField')
+        else:
+            self.assertEqual(instance._meta.fields[1].__class__.__name__, 'ETestFloatChoicesField')
+        self.assertEqual(instance._meta.fields[1].choices, ETestFloatChoices.choices())
+        self.assertIs(instance._meta.fields[1].default, ETestFloatChoices.FIELD1.value)
+        self.assertIs(instance._meta.fields[1].get_default(), ETestFloatChoices.FIELD1)
+        instance.delete()
+
+
+class ChoiceBoolFieldTest(TestCase):
+    def test_create_empty_instance(self):
+        TestEChoiceFieldDefaultEBoolChoicesModel.objects.create()
+
+    def test_create_instance(self):
+        instance = TestEChoiceFieldDefaultEBoolChoicesModel.objects.create(choice=ETestBoolChoices.FIELD1)
+        choice = instance.choice
+        self.assertIsInstance(choice, ETestBoolChoices)
+        self.assertIs(choice, ETestBoolChoices.FIELD1)
+        self.assertTrue(choice.value)
+        self.assertEqual(choice.label, 'Label 1')
+        if StrictVersion(django_version()) < StrictVersion('1.9.0'):
+            self.assertEqual(instance._meta.fields[1].__class__.__name__, 'EChoiceField')
+        else:
+            self.assertEqual(instance._meta.fields[1].__class__.__name__, 'ETestBoolChoicesField')
+        self.assertEqual(instance._meta.fields[1].choices, ETestBoolChoices.choices())
+        # Default value
+        self.assertTrue(instance._meta.fields[1].default)
+        self.assertIs(instance._meta.fields[1].get_default(), ETestBoolChoices.FIELD1)
+        # to_python()
+        self.assertTrue(instance._meta.fields[1].to_python('foo'))
+        # Custom flatchoices
+        self.assertEqual(instance._meta.fields[1].flatchoices,
+                         [(ETestBoolChoices.FIELD1, 'Label 1'), (ETestBoolChoices.FIELD2, 'Label 2')])
+        instance.delete()
+
+
+class ChoiceComplexFieldTest(TestCase):
+    def test_create_empty_instance(self):
+        def create():
+            from echoices.enums import EChoice
+
+            class ETestComplexChoices(EChoice):
+                FIELD1 = (1 + 1j, 'Label 1')
+                FIELD2 = (2 + 1j, 'Label 2')
+
+            from django.db import models
+            class TestEChoiceFieldEComplexChoicesModel(models.Model):
+                from echoices.fields import make_echoicefield
+                choice = make_echoicefield(ETestComplexChoices, default=ETestComplexChoices.FIELD1)
+
+        self.assertRaises(NotImplementedError, create)
+
+
+class ChoiceMixedDefaultFieldTest(TestCase):
+    def test_create_empty_instance(self):
+        def create():
+            from django.db import models
+
+            class TestEChoiceFieldMixedDefaultModel(models.Model):
+                from echoices.fields import make_echoicefield
+                choice = make_echoicefield(ETestCharChoices, default=ETestIntChoices.FIELD1)
+
+        self.assertRaises(AttributeError, create)
 
 
 class OrderedChoiceCharFieldTest(TestCase):
@@ -195,7 +533,135 @@ class OrderedChoiceCharFieldTest(TestCase):
         self.assertIs(choice, ETestStrOrderedChoices.FIELD1)
         self.assertEqual(choice.value, 'value3')
         self.assertEqual(choice.label, 'Label 1')
+        if StrictVersion(django_version()) < StrictVersion('1.9.0'):
+            self.assertEqual(instance._meta.fields[1].__class__.__name__, 'EChoiceField')
+        else:
+            self.assertEqual(instance._meta.fields[1].__class__.__name__, 'ETestStrOrderedChoicesField')
         self.assertEqual(instance._meta.fields[1].choices, ETestStrOrderedChoices.choices())
         self.assertIs(instance._meta.fields[1].default, ETestStrOrderedChoices.FIELD1.value)
         self.assertIs(instance._meta.fields[1].get_default(), ETestStrOrderedChoices.FIELD1)
         instance.delete()
+
+    def test_order(self):
+        # Sorted
+        instance = TestEChoiceCharFieldEStrOrderedChoicesSortedModel.objects.create(
+            choice=ETestStrOrderedChoices.FIELD1)
+        field = instance._meta.fields[1]
+        self.assertEqual(field.choices, ETestStrOrderedChoices.choices('sorted'))
+        instance.delete()
+        # Reverse
+        instance = TestEChoiceCharFieldEStrOrderedChoicesReverseModel.objects.create(
+            choice=ETestStrOrderedChoices.FIELD1)
+        field = instance._meta.fields[1]
+        self.assertEqual(field.choices, ETestStrOrderedChoices.choices('reverse'))
+        instance.delete()
+
+
+class TemplateTest(TestCase):
+    def test_simple(self):
+        tpl = Template("""
+<div class="echoices">
+{{ echoices }}
+</div>
+<div class="echoices.FIELD1">
+{{ echoices.FIELD1 }}
+</div>
+<div class="echoices.FIELD1.value">
+{{ echoices.FIELD1.value }}
+</div>
+<div class="echoices.FIELD1.label">
+{{ echoices.FIELD1.label }}
+</div>
+""")
+        ctx = Context(dict(echoices=ETestCharChoices))
+        rendered = tpl.render(ctx)
+        rendered = str(rendered.strip())
+        self.assertIn(ETestCharChoices.FIELD1.name, rendered)
+        self.assertIn(ETestCharChoices.FIELD1.value, rendered)
+        self.assertIn(ETestCharChoices.FIELD1.label, rendered)
+
+    def test_iteration(self):
+        tpl = Template("""
+{% for e in echoices %}
+    <div class="e">
+    {{ e }}
+    </div>
+    <div class="e.value">
+    {{ e.value }}
+    </div>
+    <div class="e.label">
+    {{ e.label }}
+    </div>
+{% endfor %}
+""")
+        ctx = Context(dict(echoices=ETestCharChoices))
+        rendered = tpl.render(ctx)
+        rendered = str(rendered.strip())
+        for e in ETestCharChoices:
+            self.assertIn(e.name, rendered)
+            self.assertIn(e.value, rendered)
+            self.assertIn(e.label, rendered)
+
+
+class AdminTest(TestCase):
+    def setUp(self):
+        User.objects.create_superuser('admin', 'admin@tests.com', 'admin')
+        self.client.login(username='admin', password='admin')
+
+    def test_admin(self):
+        self.assertEqual(self.client.get('/admin/').status_code, 200)
+        self.assertEqual(self.client.get('/admin/tests/').status_code, 200)
+
+    def test_admin_testcharchoicesmodel_list(self):
+        TestCharChoicesModel.objects.create(choice=ETestCharChoices.FIELD1.value)
+        for param in ['', '?choice__exact=u']:
+            response = self.client.get('/admin/tests/testcharchoicesmodel/' + param)
+            self.assertEqual(response.status_code, 200)
+            self.assertInHTML('<p class="paginator">1 test char choices model</p>', response.rendered_content)
+
+    def test_admin_testcharchoicesmodel_change(self):
+        TestCharChoicesModel.objects.create(choice=ETestCharChoices.FIELD1.value)
+        response = self.client.get('/admin/tests/testcharchoicesmodel/1/change/', follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertInHTML('<option value="u" selected="selected">Label 1</option>', response.rendered_content)
+
+
+class FormTest(TestCase):
+    def test_form(self):
+        # SEE: https://docs.djangoproject.com/en/stable/ref/forms/api/#using-forms-to-validate-data
+        class SimpleForm(forms.Form):
+            choice = make_echoicefield(ETestCharChoices).formfield()
+
+        f = SimpleForm(dict(choice=ETestCharChoices.FIELD1))
+        self.assertTrue(f.is_valid())
+
+        f = SimpleForm(dict(choice=ETestCharChoices.FIELD1.value))
+        self.assertTrue(f.is_valid())
+
+        f = SimpleForm(dict(choice=''))
+        self.assertFalse(f.is_valid())
+
+    def test_modelform_testcharchoicesmodel(self):
+        from django.forms import ModelForm
+
+        class TestCharChoicesModelForm(ModelForm):
+            class Meta:
+                model = TestCharChoicesModel
+                fields = '__all__'
+
+        f = TestCharChoicesModelForm(dict(choice=ETestCharChoices.FIELD1.value))
+        self.assertTrue(f.save())
+
+    def test_modelform_testechoicefieldestrchoicesmodel(self):
+        from django.forms import ModelForm
+
+        class TestEChoiceFieldEStrChoicesModelForm(ModelForm):
+            class Meta:
+                model = TestEChoiceFieldEStrChoicesModel
+                fields = '__all__'
+
+        f = TestEChoiceFieldEStrChoicesModelForm(dict(choice=ETestStrChoices.FIELD1))
+        self.assertTrue(f.save())
+        instance = TestEChoiceFieldEStrChoicesModel.objects.get(pk=1)
+        f = TestEChoiceFieldEStrChoicesModelForm(instance=instance)
+        self.assertInHTML('<option value="value1" selected="selected">Label 1</option>', str(f))
