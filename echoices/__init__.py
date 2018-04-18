@@ -18,10 +18,6 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from .enums import EChoice, EOrderedChoice, EAutoChoice
-from .fields import make_echoicefield
-from .forms import TypedEChoiceField
-
 __license__ = 'GNU GPLv3 <https://www.gnu.org/licenses/gpl-3.0.html>'
 __author__ = 'Marc Bourqui <pypi.kemar@bourqui.org>'
 __version__ = '2.5.1'

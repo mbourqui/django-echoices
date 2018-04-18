@@ -6,8 +6,8 @@ from django.core import exceptions
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
-from .enums import EChoice
-from .forms import TypedEChoiceField
+from echoices.enums import EChoice
+from echoices.forms import TypedEChoiceField
 
 
 class EChoiceField(models.Field):
