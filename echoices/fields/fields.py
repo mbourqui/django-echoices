@@ -63,6 +63,9 @@ class EChoiceField(models.Field):
             return self.echoices[default]
         return default
 
+    def get_internal_type(self):
+        return "EChoiceField"
+
     def from_db_value(self, value, *args):
         if value is None:
             return value
