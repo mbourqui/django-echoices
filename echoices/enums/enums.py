@@ -230,10 +230,6 @@ class EChoice(Enum, metaclass=EChoiceMeta):
         """
         return cls.__value_type_(other)
 
-
-class EOrderedChoice(EChoice):
-    """Provide ordering of the elements"""
-
     def __lt__(self, other):
         if self.__class__ is other.__class__:
             return self.value < other.value
@@ -266,7 +262,11 @@ class EOrderedChoice(EChoice):
 
     def __hash__(self):
         # Somewhat required since comparison operators are defined
-        return super(EOrderedChoice, self).__hash__()
+        return super().__hash__()
+
+
+class EOrderedChoice(EChoice):
+    """Provide ordering of the elements"""
 
     @classmethod
     def choices(cls, order='natural'):

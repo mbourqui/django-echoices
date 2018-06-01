@@ -29,6 +29,7 @@ from echoices.tests.models import TestEChoiceFieldEIntChoicesModel, TestEChoiceF
 from echoices.tests.models import TestEChoiceFieldEStrChoicesModel, TestEChoiceFieldDefaultEStrChoicesModel
 from echoices.tests.models import TestFloatChoicesModel, TestFloatChoicesDefaultModel
 from echoices.tests.models import TestNamedEChoiceFieldEStrChoicesModel
+from echoices.tests.models import int_validators
 from ..tests.models import TestEChoiceCharFieldEStrOrderedChoicesSortedModel, \
     TestEChoiceCharFieldEStrOrderedChoicesReverseModel
 
@@ -298,6 +299,11 @@ class EAutoChoiceTest(TestCase):
 
 
 class ChoiceCharFieldTest(TestCase):
+    def test_make_echoicefield(self):
+        choice = make_echoicefield(ETestStrChoices)
+        self.assertTrue(choice.__class__.__bases__[0] is models.CharField)
+        self.assertIs(choice.get_internal_type(), models.CharField.__name__)
+
     def test_create_empty_instance(self):
         TestEChoiceFieldEStrChoicesModel.objects.create()
         TestNamedEChoiceFieldEStrChoicesModel.objects.create()
@@ -344,7 +350,7 @@ class ChoiceCharFieldTest(TestCase):
         instance.delete()
 
     def test_create_instance_default(self):
-        instance = TestEChoiceFieldDefaultEStrChoicesModel.objects.create(choice=ETestStrChoices.FIELD1)
+        instance = TestEChoiceFieldDefaultEStrChoicesModel.objects.create()
         choice = instance.choice
         self.assertIsInstance(choice, ETestStrChoices)
         self.assertIs(choice, ETestStrChoices.FIELD1)
@@ -374,16 +380,12 @@ class ChoiceCharFieldTest(TestCase):
 
 
 class ChoiceIntFieldTest(TestCase):
-    def test_create_empty_instance(self):
-        TestEChoiceFieldEIntChoicesModel.objects.create()
-        self.assertEqual(TestEChoiceFieldEIntChoicesModel.objects.count(), 1)
-        self.assertIsNotNone(TestEChoiceFieldEIntChoicesModel.objects.get(pk=1))
-        TestEChoiceFieldDefaultEIntChoicesModel.objects.create()
-        self.assertEqual(TestEChoiceFieldDefaultEIntChoicesModel.objects.count(), 1)
-        self.assertIsNotNone(TestEChoiceFieldDefaultEIntChoicesModel.objects.get(pk=1))
+    def test_make_echoicefield(self):
+        choice = make_echoicefield(ETestIntChoices, validators=int_validators)
+        self.assertTrue(choice.__class__.__bases__[0] is models.IntegerField)
+        self.assertIs(choice.get_internal_type(), models.IntegerField.__name__)
 
-    def test_create_instance(self):
-        instance = TestEChoiceFieldEIntChoicesModel.objects.create(choice=ETestIntChoices.FIELD1)
+    def validate_instance(self, instance):
         choice = instance.choice
         self.assertIsInstance(choice, ETestIntChoices)
         self.assertIs(choice, ETestIntChoices.FIELD1)
@@ -403,10 +405,32 @@ class ChoiceIntFieldTest(TestCase):
         # Custom flatchoices
         self.assertEqual(instance._meta.fields[1].flatchoices,
                          [(ETestIntChoices.FIELD1, 'Label 1'), (ETestIntChoices.FIELD2, 'Label 2')])
+
+    def test_create_empty_instance(self):
+        TestEChoiceFieldEIntChoicesModel.objects.create()
+        self.assertEqual(TestEChoiceFieldEIntChoicesModel.objects.count(), 1)
+        self.assertIsNotNone(TestEChoiceFieldEIntChoicesModel.objects.get(pk=1))
+        TestEChoiceFieldDefaultEIntChoicesModel.objects.create()
+        self.assertEqual(TestEChoiceFieldDefaultEIntChoicesModel.objects.count(), 1)
+        self.assertIsNotNone(TestEChoiceFieldDefaultEIntChoicesModel.objects.get(pk=1))
+
+    def test_create_instance(self):
+        instance = TestEChoiceFieldEIntChoicesModel.objects.create(choice=ETestIntChoices.FIELD1)
+        # import pdb
+        # pdb.set_trace()
+        self.validate_instance(instance)
+        instance.delete()
+
+    def test_full_clean(self):
+        instance = TestEChoiceFieldEIntChoicesModel(choice=ETestIntChoices.FIELD1)
+        self.validate_instance(instance)
+        # self.assertTrue(validators.MaxValueValidator in instance.choice.validators)
+        instance.full_clean()
+        instance.save()
         instance.delete()
 
     def test_create_instance_default(self):
-        instance = TestEChoiceFieldDefaultEIntChoicesModel.objects.create(choice=ETestIntChoices.FIELD1)
+        instance = TestEChoiceFieldDefaultEIntChoicesModel.objects.create()
         choice = instance.choice
         self.assertIsInstance(choice, ETestIntChoices)
         self.assertIs(choice, ETestIntChoices.FIELD1)
@@ -423,12 +447,12 @@ class ChoiceIntFieldTest(TestCase):
 
 
 class ChoiceFloatFieldTest(TestCase):
-    def test_create_empty_instance(self):
-        TestEChoiceFieldEFloatChoicesModel.objects.create()
-        TestEChoiceFieldDefaultEFloatChoicesModel.objects.create()
+    def test_make_echoicefield(self):
+        choice = make_echoicefield(ETestFloatChoices)
+        self.assertTrue(choice.__class__.__bases__[0] is models.FloatField)
+        self.assertIs(choice.get_internal_type(), models.FloatField.__name__)
 
-    def test_create_instance(self):
-        instance = TestEChoiceFieldEFloatChoicesModel.objects.create(choice=ETestFloatChoices.FIELD1)
+    def validate_instance(self, instance):
         choice = instance.choice
         self.assertIsInstance(choice, ETestFloatChoices)
         self.assertIs(choice, ETestFloatChoices.FIELD1)
@@ -448,10 +472,25 @@ class ChoiceFloatFieldTest(TestCase):
         # Custom flatchoices
         self.assertEqual(instance._meta.fields[1].flatchoices,
                          [(ETestFloatChoices.FIELD1, 'Label 1'), (ETestFloatChoices.FIELD2, 'Label 2')])
+
+    def test_create_empty_instance(self):
+        TestEChoiceFieldEFloatChoicesModel.objects.create()
+        TestEChoiceFieldDefaultEFloatChoicesModel.objects.create()
+
+    def test_create_instance(self):
+        instance = TestEChoiceFieldEFloatChoicesModel.objects.create(choice=ETestFloatChoices.FIELD1)
+        self.validate_instance(instance)
+        instance.delete()
+
+    def test_full_clean(self):
+        instance = TestEChoiceFieldEFloatChoicesModel(choice=ETestFloatChoices.FIELD1)
+        self.validate_instance(instance)
+        instance.full_clean()
+        instance.save()
         instance.delete()
 
     def test_create_instance_default(self):
-        instance = TestEChoiceFieldDefaultEFloatChoicesModel.objects.create(choice=ETestFloatChoices.FIELD1)
+        instance = TestEChoiceFieldDefaultEFloatChoicesModel.objects.create()
         choice = instance.choice
         self.assertIsInstance(choice, ETestFloatChoices)
         self.assertIs(choice, ETestFloatChoices.FIELD1)
@@ -468,6 +507,11 @@ class ChoiceFloatFieldTest(TestCase):
 
 
 class ChoiceBoolFieldTest(TestCase):
+    def test_make_echoicefield(self):
+        choice = make_echoicefield(ETestBoolChoices)
+        self.assertTrue(choice.__class__.__bases__[0] is models.BooleanField)
+        self.assertIs(choice.get_internal_type(), models.BooleanField.__name__)
+
     def test_create_empty_instance(self):
         TestEChoiceFieldDefaultEBoolChoicesModel.objects.create()
 

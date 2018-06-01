@@ -20,7 +20,7 @@ class EChoiceField(models.Field):
 
     Parameters
     ----------
-    echoices : sublcass of EChoice
+    echoices : subclass of EChoice
         The choices this field supports.
     * args
         Are passed to the derived models.Field
