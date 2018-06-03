@@ -10,7 +10,7 @@ from echoices import __version__
 REPO_URL = "https://github.com/mbourqui/django-echoices/"
 
 README = ''
-for ext in ['md','rst']:
+for ext in ['md', 'rst']:
     try:
         with open(os.path.join(os.path.dirname(__file__), 'README.' + ext)) as readme:
             README = readme.read()
