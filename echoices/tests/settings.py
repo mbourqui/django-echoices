@@ -1,7 +1,5 @@
 import os
-from distutils.version import StrictVersion
 
-import django
 BASE_DIR = os.path.dirname(os.path.realpath(__file__))
 
 DEBUG = False
@@ -30,9 +28,6 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.common.CommonMiddleware',
 ]
-
-if StrictVersion(django.get_version()) < StrictVersion('1.10.0'):
-    MIDDLEWARE_CLASSES = MIDDLEWARE
 
 TIME_ZONE = 'Europe/Zurich'
 
