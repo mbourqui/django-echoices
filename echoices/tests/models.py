@@ -1,7 +1,10 @@
+from django.core import validators
 from django.db import models
 
 from echoices.enums import EChoice, EOrderedChoice, EAutoChoice
 from echoices.fields import make_echoicefield
+
+int_validators = (validators.MinValueValidator(-1), validators.MaxValueValidator(100))
 
 
 # ==========
@@ -55,11 +58,12 @@ class TestStrChoicesDefaultModel(models.Model):
 
 
 class TestIntChoicesModel(models.Model):
-    choice = models.IntegerField(choices=ETestIntChoices.choices(), null=True)
+    choice = models.IntegerField(choices=ETestIntChoices.choices(), null=True, validators=int_validators)
 
 
 class TestIntChoicesDefaultModel(models.Model):
-    choice = models.IntegerField(choices=ETestIntChoices.choices(), default=ETestIntChoices.FIELD1.value)
+    choice = models.IntegerField(choices=ETestIntChoices.choices(), default=ETestIntChoices.FIELD1.value,
+                                 validators=int_validators)
 
 
 class TestFloatChoicesModel(models.Model):
@@ -109,7 +113,8 @@ class TestStrOrderedChoicesModel(models.Model):
 
 
 class TestIntOrderedChoicesModel(models.Model):
-    choice = models.IntegerField(choices=ETestIntOrderedChoices.choices(), default=ETestIntOrderedChoices.FIELD1.value)
+    choice = models.IntegerField(choices=ETestIntOrderedChoices.choices(), default=ETestIntOrderedChoices.FIELD1.value,
+                                 validators=int_validators)
 
 
 # ==========
@@ -122,7 +127,8 @@ class ETestAutoChoices(EAutoChoice):
 
 
 class TestAutoChoicesModel(models.Model):
-    choice = models.IntegerField(choices=ETestAutoChoices.choices(), default=ETestAutoChoices.FIELD1.value)
+    choice = models.IntegerField(choices=ETestAutoChoices.choices(), default=ETestAutoChoices.FIELD1.value,
+                                 validators=int_validators)
 
 
 # ==========
@@ -141,11 +147,13 @@ class TestEChoiceFieldDefaultEStrChoicesModel(models.Model):
 
 
 class TestEChoiceFieldEIntChoicesModel(models.Model):
-    choice = make_echoicefield(ETestIntChoices, null=True)
+    # We add the validators manually as there are none when using the default testing database
+    choice = make_echoicefield(ETestIntChoices, null=True, validators=int_validators)
 
 
 class TestEChoiceFieldDefaultEIntChoicesModel(models.Model):
-    choice = make_echoicefield(ETestIntChoices, default=ETestIntChoices.FIELD1)
+    # We add the validators manually as there are none when using the default testing database
+    choice = make_echoicefield(ETestIntChoices, default=ETestIntChoices.FIELD1, validators=int_validators)
 
 
 class TestEChoiceFieldEFloatChoicesModel(models.Model):
