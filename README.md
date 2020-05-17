@@ -15,13 +15,13 @@ Choices for Django model fields as enumeration
 
 * Specialized [enum types](#enum)
 * Specialized [model fields](#modelfield)
-* Accessible in [templates](#templages)
+* Accessible in [templates](#templates)
 
 
 ## Requirements
 
 * [Python][] >= 3.4
-* [Django][] >= 1.9.13
+* [Django][] >= 1.11.29
 
 
 ## Installation
