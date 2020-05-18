@@ -78,7 +78,7 @@ class MyModel(models.Model):
 **Note**: `MyModel.state` will be `Estates` instance stored in a `EStatesField` field. See [documentation](#modelfield)
 for more details.
 
-**WARNING**: requires special handling of migrations. Read more in the [doc](#migrations).
+**WARNING**: requires special handling of migrations. Read more in the [documentation](#migrations).
 
 ### Derivation
 
@@ -219,7 +219,7 @@ with
 
 #### `fields.MultipleEChoiceField`
 Similar to previous fields, but supports multiple values to be selected.
-[**Not yet implemented**](#3).
+[**Not yet implemented**][i03].
 
 ### <a name="templates"></a>Usage in templates
 Assume a `Context(dict(estates=myapp.models.EStates))` is provided to the following templates.
@@ -240,3 +240,4 @@ Assume a `Context(dict(estates=myapp.models.EStates))` is provided to the follow
 
   [django]:     https://www.djangoproject.com/      "Django"
   [python]:     https://www.python.org/             "Python"
+  [i03]:        https://github.com/mbourqui/django-echoices/issues/3
