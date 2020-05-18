@@ -709,3 +709,15 @@ class FormTest(TestCase):
         instance = TestEChoiceFieldEStrChoicesModel.objects.get(pk=1)
         f = TestEChoiceFieldEStrChoicesModelForm(instance=instance)
         self.assertInHTML('<option value="value1" selected="selected">Label 1</option>', str(f))
+
+
+class SerializationTestCase(TestCase):
+    def test_pickle(self):
+        import pickle
+        from ..enums import EChoice
+        pickle.loads(pickle.dumps(EChoice))
+        pickle.loads(pickle.dumps(ETestCharChoices))
+        from ..enums import EOrderedChoice
+        pickle.loads(pickle.dumps(EOrderedChoice))
+        from ..enums import EAutoChoice
+        pickle.loads(pickle.dumps(EAutoChoice))
