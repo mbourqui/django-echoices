@@ -21,7 +21,7 @@ Choices for Django model fields as enumeration
 ## Requirements
 
 * [Python][] >= 3.4
-* [Django][] >= 1.11.29
+* [Django][] >= 1.11.29,<3
 
 
 ## Installation
