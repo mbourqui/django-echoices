@@ -5,6 +5,7 @@
 [![Build Status](https://travis-ci.org/mbourqui/django-echoices.svg?branch=master)](https://travis-ci.org/mbourqui/django-echoices)
 [![Coverage Status](https://coveralls.io/repos/github/mbourqui/django-echoices/badge.svg?branch=master)](https://coveralls.io/github/mbourqui/django-echoices?branch=master)
 
+[ ~ Dependencies scanned by PyUp.io ~ ]
 
 # Django-EChoices
 
