@@ -28,21 +28,25 @@ class EChoiceField(models.Field):
         Are passed to the derived models.Field
 
     """
+
     description = _("A derived Field supporting enumerated choices")
 
     def __init__(self, echoices, *args, order=None, **kwargs):
         self.echoices = echoices
         self.order = order
-        kwargs['choices'] = self._get_sorted_choices()
-        default = kwargs.get('default')
+        kwargs["choices"] = self._get_sorted_choices()
+        default = kwargs.get("default")
         if default:
             if not isinstance(default, self.echoices):
                 raise AttributeError(
-                    "Illegal default value: {}. Must be an instance of {}".format(default, self.echoices))
-            kwargs['default'] = default.value
+                    "Illegal default value: {}. Must be an instance of {}".format(
+                        default, self.echoices
+                    )
+                )
+            kwargs["default"] = default.value
         # Parameters specific to some fields
         if issubclass(self.__class__, models.CharField):
-            kwargs['max_length'] = echoices.max_value_length()
+            kwargs["max_length"] = echoices.max_value_length()
         super(self.__class__, self).__init__(*args, **kwargs)
 
     def _get_sorted_choices(self):
@@ -75,25 +79,23 @@ class EChoiceField(models.Field):
             return self.echoices[self.echoices.coerce(value)]
         except (TypeError, ValueError):
             raise exceptions.ValidationError(
-                self.error_messages['invalid'],
-                code='invalid',
-                params={'value': value},
+                self.error_messages["invalid"], code="invalid", params={"value": value},
             )
         except KeyError:
             raise exceptions.ValidationError(
-                self.error_messages['invalid_choice'],
-                code='invalid_choice',
-                params={'value': value},
+                self.error_messages["invalid_choice"],
+                code="invalid_choice",
+                params={"value": value},
             ) from None
 
     def get_prep_value(self, value):
         if isinstance(value, self.echoices):
             return value.value
-        assert value in self.echoices.values() or value in ['', None]
+        assert value in self.echoices.values() or value in ["", None]
         return value
 
     def formfield(self, **kwargs):
-        defaults = {'choices_form_class': TypedEChoiceField}
+        defaults = {"choices_form_class": TypedEChoiceField}
         defaults.update(kwargs)
         return super(self.__class__, self).formfield(**defaults)
 
@@ -107,13 +109,13 @@ class EChoiceField(models.Field):
     def deconstruct(self):
         name, path, args, kwargs = super(self.__class__, self).deconstruct()
         # Drop the parameters set by our field
-        del kwargs['choices']
+        del kwargs["choices"]
         if issubclass(self.__class__, models.CharField):
-            del kwargs['max_length']
+            del kwargs["max_length"]
         # Set the parameters in our non-trivial formats
-        kwargs['echoices'] = self.echoices
+        kwargs["echoices"] = self.echoices
         if self.has_default():
-            kwargs['default'] = self.get_default()
+            kwargs["default"] = self.get_default()
         return name, path, args, kwargs
 
 
@@ -151,15 +153,28 @@ def make_echoicefield(echoices, *args, klass_name=None, **kwargs):
     elif value_type is bool:
         cls_ = models.BooleanField
     else:
-        raise NotImplementedError("Please open an issue if you wish your value type to be supported: "
-                                  "https://github.com/mbourqui/django-echoices/issues/new")
-    if klass_name and StrictVersion(django_version()) < StrictVersion('1.9.0'):
-        warnings.warn("Django < 1.9 throws an 'ImportError' if the class name is not defined in the module. "
-                      "The provided klass_name will be replaced by {}".format(EChoiceField.__name__), RuntimeWarning)
-    klass_name = EChoiceField.__name__ if StrictVersion(django_version()) < StrictVersion('1.9.0') else \
-        klass_name if klass_name else "{}Field".format(echoices.__name__)
+        raise NotImplementedError(
+            "Please open an issue if you wish your value type to be supported: "
+            "https://github.com/mbourqui/django-echoices/issues/new"
+        )
+    if klass_name and StrictVersion(django_version()) < StrictVersion("1.9.0"):
+        warnings.warn(
+            "Django < 1.9 throws an 'ImportError' if the class name is not defined in the module. "
+            "The provided klass_name will be replaced by {}".format(
+                EChoiceField.__name__
+            ),
+            RuntimeWarning,
+        )
+    klass_name = (
+        EChoiceField.__name__
+        if StrictVersion(django_version()) < StrictVersion("1.9.0")
+        else klass_name
+        if klass_name
+        else "{}Field".format(echoices.__name__)
+    )
     d = dict(cls_.__dict__)
     d.update(dict(EChoiceField.__dict__))
     return type(klass_name, (cls_,), d)(echoices, *args, **kwargs)
+
 
 # TODO: MultipleEChoiceField

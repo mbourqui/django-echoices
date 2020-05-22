@@ -4,6 +4,8 @@
 [![PyPI](https://img.shields.io/pypi/v/django_echoices.svg?style=flat-square)](https://pypi.python.org/pypi/django-echoices)
 [![Build Status](https://travis-ci.org/mbourqui/django-echoices.svg?branch=master)](https://travis-ci.org/mbourqui/django-echoices)
 [![Coverage Status](https://coveralls.io/repos/github/mbourqui/django-echoices/badge.svg?branch=master)](https://coveralls.io/github/mbourqui/django-echoices?branch=master)
+[![Downloads](https://pepy.tech/badge/django-echoices)](https://pepy.tech/project/django-echoices)
+<a href="https://github.com/psf/black"><img alt="Code style: black" src="https://img.shields.io/badge/code%20style-black-000000.svg"></a>
 
 
 # Django-EChoices

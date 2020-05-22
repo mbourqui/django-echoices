@@ -58,10 +58,17 @@ class EChoice(Enum, metaclass=EChoiceMeta):
             cls.do_not_call_in_templates = True
         else:
             if type(value) is not cls.__value_type_:
-                raise TypeError("Incompatible type: {}. All values must be {}.".format(type(value), cls.__value_type_))
+                raise TypeError(
+                    "Incompatible type: {}. All values must be {}.".format(
+                        type(value), cls.__value_type_
+                    )
+                )
             if value in [c.value for c in list(cls)]:
                 raise AttributeError(
-                    "Duplicate value: '{}'. Only unique values are supported in {}.".format(value, EChoice))
+                    "Duplicate value: '{}'. Only unique values are supported in {}.".format(
+                        value, EChoice
+                    )
+                )
         obj = object.__new__(cls)
         obj._value_ = value  # Overrides default _value_
         obj._label_ = label
@@ -76,7 +83,7 @@ class EChoice(Enum, metaclass=EChoiceMeta):
     def choice(self):
         return self.value, self.label
 
-    def __call__(self, attr='value'):
+    def __call__(self, attr="value"):
         """
         Hack to get the "selected" tag. Does actually nothing else than returning the attribute `attr`. If `attr` is
         a callable, it will be called.
@@ -127,7 +134,7 @@ class EChoice(Enum, metaclass=EChoiceMeta):
             of all the values of this Enum
         
         """
-        if not hasattr(cls, '__values_'):
+        if not hasattr(cls, "__values_"):
             cls.__values_ = tuple([c.value for c in list(cls)])
         return cls.__values_
 
@@ -142,7 +149,7 @@ class EChoice(Enum, metaclass=EChoiceMeta):
             the maximal length required by this Enum to be stored in the database
 
         """
-        if not hasattr(cls, '__max_value_length_'):
+        if not hasattr(cls, "__max_value_length_"):
             cls.__max_value_length_ = max([len(c.value) for c in list(cls)])
         return cls.__max_value_length_
 
@@ -157,7 +164,7 @@ class EChoice(Enum, metaclass=EChoiceMeta):
 
         """
         # "natural" order, aka as given when instantiating
-        if not hasattr(cls, '__choices_'):
+        if not hasattr(cls, "__choices_"):
             cls.__choices_ = tuple([c.choice for c in list(cls)])
         return cls.__choices_
 
@@ -181,9 +188,13 @@ class EChoice(Enum, metaclass=EChoiceMeta):
             if `value` does not exist in any element
 
         """
-        warnings.warn("{0}.{1} will be deprecated in a future release. "
-                      "Please use {0}.{2} instead".format(cls.__name__, cls.from_value.__name__, cls.get.__name__),
-                      PendingDeprecationWarning)
+        warnings.warn(
+            "{0}.{1} will be deprecated in a future release. "
+            "Please use {0}.{2} instead".format(
+                cls.__name__, cls.from_value.__name__, cls.get.__name__
+            ),
+            PendingDeprecationWarning,
+        )
         return cls[value]
 
     @classmethod
@@ -269,7 +280,7 @@ class EOrderedChoice(EChoice):
     """Provide ordering of the elements"""
 
     @classmethod
-    def choices(cls, order='natural'):
+    def choices(cls, order="natural"):
         """
         Generate the choices as required by Django models.
 
@@ -287,17 +298,27 @@ class EOrderedChoice(EChoice):
         iterable of tuple
 
         """
-        INC, DEC, NAT = 'sorted', 'reverse', 'natural'
+        INC, DEC, NAT = "sorted", "reverse", "natural"
         options = [INC, DEC, NAT]
-        assert order in options, "Sorting order not recognized: {}. Available options are: {}".format(order, options)
+        assert (
+            order in options
+        ), "Sorting order not recognized: {}. Available options are: {}".format(
+            order, options
+        )
         if order in [INC, DEC]:
             reverse = order == DEC
             if reverse:
-                attr = '__choices_reverse_'
+                attr = "__choices_reverse_"
             else:
-                attr = '__choices_sorted_'
+                attr = "__choices_sorted_"
             if not hasattr(cls, attr):
-                setattr(cls, attr, tuple([(c.value, c.label) for c in sorted(list(cls), reverse=reverse)]))
+                setattr(
+                    cls,
+                    attr,
+                    tuple(
+                        [(c.value, c.label) for c in sorted(list(cls), reverse=reverse)]
+                    ),
+                )
             return getattr(cls, attr)
         else:
             return super(EOrderedChoice, cls).choices()

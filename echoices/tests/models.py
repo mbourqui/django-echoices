@@ -10,60 +10,73 @@ int_validators = (validators.MinValueValidator(-1), validators.MaxValueValidator
 # ==========
 # EChoice
 
+
 class ETestCharChoices(EChoice):
-    FIELD1 = ('u', 'Label 1')
-    FIELD2 = ('v', 'Label 2')
+    FIELD1 = ("u", "Label 1")
+    FIELD2 = ("v", "Label 2")
 
 
 class ETestStrChoices(EChoice):
-    FIELD1 = ('value1', 'Label 1')
-    FIELD2 = ('value2', 'Label 2')
+    FIELD1 = ("value1", "Label 1")
+    FIELD2 = ("value2", "Label 2")
 
 
 class ETestIntChoices(EChoice):
-    FIELD1 = (10, 'Label 1')
-    FIELD2 = (20, 'Label 2')
+    FIELD1 = (10, "Label 1")
+    FIELD2 = (20, "Label 2")
 
 
 class ETestFloatChoices(EChoice):
-    FIELD1 = (1.0, 'Label 1')
-    FIELD2 = (2.0, 'Label 2')
+    FIELD1 = (1.0, "Label 1")
+    FIELD2 = (2.0, "Label 2")
 
 
 class ETestBoolChoices(EChoice):
-    FIELD1 = (True, 'Label 1')
-    FIELD2 = (False, 'Label 2')
+    FIELD1 = (True, "Label 1")
+    FIELD2 = (False, "Label 2")
 
 
 class TestCharChoicesModel(models.Model):
-    choice = models.CharField(max_length=ETestCharChoices.max_value_length(),
-                              choices=ETestCharChoices.choices())
+    choice = models.CharField(
+        max_length=ETestCharChoices.max_value_length(),
+        choices=ETestCharChoices.choices(),
+    )
 
 
 class TestCharChoicesDefaultModel(models.Model):
-    choice = models.CharField(max_length=ETestCharChoices.max_value_length(),
-                              choices=ETestCharChoices.choices(),
-                              default=ETestCharChoices.FIELD1.value)
+    choice = models.CharField(
+        max_length=ETestCharChoices.max_value_length(),
+        choices=ETestCharChoices.choices(),
+        default=ETestCharChoices.FIELD1.value,
+    )
 
 
 class TestStrChoicesModel(models.Model):
-    choice = models.CharField(max_length=ETestStrChoices.max_value_length(),
-                              choices=ETestStrChoices.choices())
+    choice = models.CharField(
+        max_length=ETestStrChoices.max_value_length(), choices=ETestStrChoices.choices()
+    )
 
 
 class TestStrChoicesDefaultModel(models.Model):
-    choice = models.CharField(max_length=ETestStrChoices.max_value_length(),
-                              choices=ETestStrChoices.choices(),
-                              default=ETestStrChoices.FIELD1.value)
+    choice = models.CharField(
+        max_length=ETestStrChoices.max_value_length(),
+        choices=ETestStrChoices.choices(),
+        default=ETestStrChoices.FIELD1.value,
+    )
 
 
 class TestIntChoicesModel(models.Model):
-    choice = models.IntegerField(choices=ETestIntChoices.choices(), null=True, validators=int_validators)
+    choice = models.IntegerField(
+        choices=ETestIntChoices.choices(), null=True, validators=int_validators
+    )
 
 
 class TestIntChoicesDefaultModel(models.Model):
-    choice = models.IntegerField(choices=ETestIntChoices.choices(), default=ETestIntChoices.FIELD1.value,
-                                 validators=int_validators)
+    choice = models.IntegerField(
+        choices=ETestIntChoices.choices(),
+        default=ETestIntChoices.FIELD1.value,
+        validators=int_validators,
+    )
 
 
 class TestFloatChoicesModel(models.Model):
@@ -71,75 +84,92 @@ class TestFloatChoicesModel(models.Model):
 
 
 class TestFloatChoicesDefaultModel(models.Model):
-    choice = models.FloatField(choices=ETestFloatChoices.choices(), default=ETestFloatChoices.FIELD1.value)
+    choice = models.FloatField(
+        choices=ETestFloatChoices.choices(), default=ETestFloatChoices.FIELD1.value
+    )
 
 
 class TestBoolChoicesDefaultModel(models.Model):
     # NULL is not supported by BooleanField, but NullBooleanField does
-    choice = models.BooleanField(choices=ETestBoolChoices.choices(), default=ETestBoolChoices.FIELD1.value)
+    choice = models.BooleanField(
+        choices=ETestBoolChoices.choices(), default=ETestBoolChoices.FIELD1.value
+    )
 
 
 # ==========
 # EOrderedChoice
 
+
 class ETestCharOrderedChoices(EOrderedChoice):
-    FIELD1 = ('w', 'Label 1')
-    FIELD2 = ('u', 'Label 2')
-    FIELD3 = ('v', 'Label 3')
+    FIELD1 = ("w", "Label 1")
+    FIELD2 = ("u", "Label 2")
+    FIELD3 = ("v", "Label 3")
 
 
 class ETestStrOrderedChoices(EOrderedChoice):
-    FIELD1 = ('value3', 'Label 1')
-    FIELD2 = ('value1', 'Label 2')
-    FIELD3 = ('value2', 'Label 3')
+    FIELD1 = ("value3", "Label 1")
+    FIELD2 = ("value1", "Label 2")
+    FIELD3 = ("value2", "Label 3")
 
 
 class ETestIntOrderedChoices(EOrderedChoice):
-    FIELD1 = (30, 'Label 1')
-    FIELD2 = (10, 'Label 2')
-    FIELD3 = (20, 'Label 3')
+    FIELD1 = (30, "Label 1")
+    FIELD2 = (10, "Label 2")
+    FIELD3 = (20, "Label 3")
 
 
 class TestCharOrderedChoicesModel(models.Model):
-    choice = models.CharField(max_length=ETestCharOrderedChoices.max_value_length(),
-                              choices=ETestCharOrderedChoices.choices(),
-                              default=ETestCharOrderedChoices.FIELD1.value)
+    choice = models.CharField(
+        max_length=ETestCharOrderedChoices.max_value_length(),
+        choices=ETestCharOrderedChoices.choices(),
+        default=ETestCharOrderedChoices.FIELD1.value,
+    )
 
 
 class TestStrOrderedChoicesModel(models.Model):
-    choice = models.CharField(max_length=ETestStrOrderedChoices.max_value_length(),
-                              choices=ETestStrOrderedChoices.choices(),
-                              default=ETestStrOrderedChoices.FIELD1.value)
+    choice = models.CharField(
+        max_length=ETestStrOrderedChoices.max_value_length(),
+        choices=ETestStrOrderedChoices.choices(),
+        default=ETestStrOrderedChoices.FIELD1.value,
+    )
 
 
 class TestIntOrderedChoicesModel(models.Model):
-    choice = models.IntegerField(choices=ETestIntOrderedChoices.choices(), default=ETestIntOrderedChoices.FIELD1.value,
-                                 validators=int_validators)
+    choice = models.IntegerField(
+        choices=ETestIntOrderedChoices.choices(),
+        default=ETestIntOrderedChoices.FIELD1.value,
+        validators=int_validators,
+    )
 
 
 # ==========
 # EAutoChoice
 
+
 class ETestAutoChoices(EAutoChoice):
-    FIELD1 = 'Label 1'
-    FIELD2 = 'Label 2'
-    FIELD3 = 'Label 3'
+    FIELD1 = "Label 1"
+    FIELD2 = "Label 2"
+    FIELD3 = "Label 3"
 
 
 class TestAutoChoicesModel(models.Model):
-    choice = models.IntegerField(choices=ETestAutoChoices.choices(), default=ETestAutoChoices.FIELD1.value,
-                                 validators=int_validators)
+    choice = models.IntegerField(
+        choices=ETestAutoChoices.choices(),
+        default=ETestAutoChoices.FIELD1.value,
+        validators=int_validators,
+    )
 
 
 # ==========
 # EChoiceField
+
 
 class TestEChoiceFieldEStrChoicesModel(models.Model):
     choice = make_echoicefield(ETestStrChoices)
 
 
 class TestNamedEChoiceFieldEStrChoicesModel(models.Model):
-    choice = make_echoicefield(ETestStrChoices, klass_name='MyEnumFieldName')
+    choice = make_echoicefield(ETestStrChoices, klass_name="MyEnumFieldName")
 
 
 class TestEChoiceFieldDefaultEStrChoicesModel(models.Model):
@@ -153,7 +183,9 @@ class TestEChoiceFieldEIntChoicesModel(models.Model):
 
 class TestEChoiceFieldDefaultEIntChoicesModel(models.Model):
     # We add the validators manually as there are none when using the default testing database
-    choice = make_echoicefield(ETestIntChoices, default=ETestIntChoices.FIELD1, validators=int_validators)
+    choice = make_echoicefield(
+        ETestIntChoices, default=ETestIntChoices.FIELD1, validators=int_validators
+    )
 
 
 class TestEChoiceFieldEFloatChoicesModel(models.Model):
@@ -170,14 +202,21 @@ class TestEChoiceFieldDefaultEBoolChoicesModel(models.Model):
 
 
 class TestEChoiceCharFieldEStrOrderedChoicesModel(models.Model):
-    choice = make_echoicefield(ETestStrOrderedChoices, default=ETestStrOrderedChoices.FIELD1)
+    choice = make_echoicefield(
+        ETestStrOrderedChoices, default=ETestStrOrderedChoices.FIELD1
+    )
 
 
 class TestEChoiceCharFieldEStrOrderedChoicesSortedModel(models.Model):
-    choice = make_echoicefield(ETestStrOrderedChoices, default=ETestStrOrderedChoices.FIELD1, order='sorted')
+    choice = make_echoicefield(
+        ETestStrOrderedChoices, default=ETestStrOrderedChoices.FIELD1, order="sorted"
+    )
 
 
 class TestEChoiceCharFieldEStrOrderedChoicesReverseModel(models.Model):
-    choice = make_echoicefield(ETestStrOrderedChoices, default=ETestStrOrderedChoices.FIELD1, order='reverse')
+    choice = make_echoicefield(
+        ETestStrOrderedChoices, default=ETestStrOrderedChoices.FIELD1, order="reverse"
+    )
+
 
 # TODO: derive EChoice
