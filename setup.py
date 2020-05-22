@@ -36,7 +36,7 @@ setup(
         '': ['*.po', '*.mo'],
     },
     install_requires=[
-        'django>=1.11.17,<3.0',
+        'django>=1.11.29,<3.0',
     ],
     keywords='django choices models enum',
     classifiers=[
@@ -50,7 +50,6 @@ setup(
         'Operating System :: OS Independent',
         'Programming Language :: Python',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
