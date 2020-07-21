@@ -7,7 +7,7 @@ python:
 env:
   - DJANGO_VERSION=1.11.29
   - DJANGO_VERSION=2.2.12
-#  - DJANGO_VERSION=3.0
+  - DJANGO_VERSION=3.0
 # https://docs.djangoproject.com/en/dev/faq/install/#what-python-version-can-i-use-with-django
 matrix:
   exclude:
