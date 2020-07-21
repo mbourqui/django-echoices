@@ -4,7 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [2.7.0]
+## [Unreleased]
+## Added
+- Support for Django 3.0
+
+## [2.7.0] - 2020.07.21
 ## Changed
 - Visibility of `EChoiceMeta`, now accessible at the same package level as the other enums
 
@@ -12,7 +16,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Support for Python 3.4
 - Support for Django 1.10
 
-## [2.6.0] - 2018-06-03
+## [2.6.0] - 2018.06.03
 ### Removed
 - Support for Django 1.9
 

@@ -1,5 +1,5 @@
 [![Python](https://img.shields.io/badge/Python-3.5,3.6,3.7,3.8-blue.svg?style=flat-square)](/)
-[![Django](https://img.shields.io/badge/Django-1.11,2.2-blue.svg?style=flat-square)](/)
+[![Django](https://img.shields.io/badge/Django-1.11,2.2,3.0-blue.svg?style=flat-square)](/)
 [![License](https://img.shields.io/badge/License-GPLv3-blue.svg?style=flat-square)](/LICENSE)
 [![PyPI](https://img.shields.io/pypi/v/django_echoices.svg?style=flat-square)](https://pypi.python.org/pypi/django-echoices)
 [![Build Status](https://travis-ci.org/mbourqui/django-echoices.svg?branch=master)](https://travis-ci.org/mbourqui/django-echoices)
@@ -20,8 +20,8 @@ Choices for Django model fields as enumeration
 
 ## Requirements
 
-* [Python][] >= 3.4
-* [Django][] >= 1.11.29,<3
+* [Python][] >= 3.5
+* [Django][] >= 1.11.29
 
 
 ## Installation
