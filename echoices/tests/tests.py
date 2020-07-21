@@ -231,6 +231,7 @@ class EOrderedChoiceTest(TestCase):
         self.assertTrue(ETestCharOrderedChoices.get('a', default=True))
 
     def test_orderable(self):
+        # file deepcode ignore PythonConstantBinaryExpression: Testing binary comparisons
         self.assertTrue(ETestStrOrderedChoices.FIELD1 > ETestStrOrderedChoices.FIELD2)
         self.assertTrue(ETestIntOrderedChoices.FIELD1 > ETestIntOrderedChoices.FIELD2)
         self.assertTrue(ETestIntOrderedChoices.FIELD1 > 10)
@@ -240,12 +241,14 @@ class EOrderedChoiceTest(TestCase):
         self.assertFalse(ETestIntOrderedChoices.FIELD2 > '30')
         self.assertTrue(ETestStrOrderedChoices.FIELD2 == ETestStrOrderedChoices.FIELD2)
         self.assertTrue(ETestIntOrderedChoices.FIELD2 == ETestIntOrderedChoices.FIELD2)
+        self.assertTrue(ETestStrOrderedChoices.FIELD2 != ETestIntOrderedChoices.FIELD2)
         self.assertTrue(ETestIntOrderedChoices.FIELD2 == 10)
         self.assertTrue(ETestIntOrderedChoices.FIELD2 == '10')
         self.assertFalse(ETestIntOrderedChoices.FIELD2 == ETestIntOrderedChoices.FIELD3)
         self.assertFalse(ETestIntOrderedChoices.FIELD2 == 20)
         self.assertFalse(ETestIntOrderedChoices.FIELD2 == '20')
         self.assertFalse(ETestIntOrderedChoices.FIELD2 == None)
+        self.assertFalse(ETestIntOrderedChoices.FIELD2 is None)
         self.assertFalse(ETestIntOrderedChoices.FIELD2 == '')
         self.assertTrue(ETestStrOrderedChoices.FIELD3 < ETestStrOrderedChoices.FIELD1)
         self.assertTrue(ETestIntOrderedChoices.FIELD3 < ETestIntOrderedChoices.FIELD1)
