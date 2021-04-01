@@ -36,7 +36,7 @@ setup(
         '': ['*.po', '*.mo'],
     },
     install_requires=[
-        'django>=1.11.29,<3.0',
+        'django>=1.11.29',
     ],
     keywords='django choices models enum',
     classifiers=[
