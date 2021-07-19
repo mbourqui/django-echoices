@@ -403,7 +403,7 @@ class ChoiceIntFieldTest(TestCase):
         self.assertIs(instance._meta.fields[1].default, models.fields.NOT_PROVIDED)
         self.assertIsNone(instance._meta.fields[1].get_default())
         # to_python()
-        self.assertRaisesMessage(exceptions.ValidationError, '["\'foo\' value must be an integer."]',
+        self.assertRaisesRegexp(exceptions.ValidationError, r"^\[.+foo.+ value must be an integer\..\]$",
                                  instance._meta.fields[1].to_python, 'foo')
         # Custom flatchoices
         self.assertEqual(instance._meta.fields[1].flatchoices,
@@ -470,8 +470,8 @@ class ChoiceFloatFieldTest(TestCase):
         self.assertIs(instance._meta.fields[1].default, models.fields.NOT_PROVIDED)
         self.assertIs(instance._meta.fields[1].get_default(), None)
         # to_python()
-        self.assertRaisesMessage(exceptions.ValidationError, '["\'foo\' value must be a float."]',
-                                 instance._meta.fields[1].to_python, 'foo')
+        self.assertRaisesRegexp(exceptions.ValidationError, r"^\[.+foo.+ value must be a float\..\]$",
+                                instance._meta.fields[1].to_python, 'foo')
         # Custom flatchoices
         self.assertEqual(instance._meta.fields[1].flatchoices,
                          [(ETestFloatChoices.FIELD1, 'Label 1'), (ETestFloatChoices.FIELD2, 'Label 2')])
