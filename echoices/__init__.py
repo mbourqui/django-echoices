@@ -20,6 +20,6 @@ along with this program.  If not, see
 
 __license__ = 'MIT'
 __author__ = 'Marc Bourqui <pypi.kemar@bourqui.org>'
-__version__ = '2.8.0'
+__version__ = '2.8.1'
 __version_info__ = tuple([int(num) if num.isdigit() else num for num in __version__.replace('-', '.', 1).split('.')])
 __status__ = 'Stable'
